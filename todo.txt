@@ -1,0 +1,3 @@
+ultimate3TState binary encoding constructor
+Investigate encoding the board info in the best move encoding in the active board section.
+should ultimate3TState::getSpaceState check and handle out of range errors?
