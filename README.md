@@ -32,13 +32,13 @@ which of the nine boards is active has 10 posilities including any board, and so
 | 1000  | Board 8 |
 | 1111  | Any Board may be played on |
 
-The evaluation of the state has three possibilities.
+The evaluation of the state has three possibilities. They are arrainged so that O winning has the smallest value, and X winning has the highest value. This makes comparing evaluations easier.
 
 | Value |  State  |
 |-------| --------|
-| 00    | Draw    | 
-| 01    | X wins  |
-| 10    | O wins  |
+| 00    | O wins  |
+| 01    | Draw    | 
+| 10    | X wins  |
 
 The best move has two parts, which active board is to be played on and which space on that board to play on. Since each of those requires 4 bits the move is encoded in 8 bits with two four bit parts. There may be some clever way to store the board to play on in the active board field but that can be left for the future.
 

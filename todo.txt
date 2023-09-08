@@ -1,3 +1,9 @@
 ultimate3TState binary encoding constructor
 Investigate encoding the board info in the best move encoding in the active board section.
 should ultimate3TState::getSpaceState check and handle out of range errors?
+write Ultimate3TState::isTerminalState()
+File i/O
+define binary encoding scheme
+Define terminal visual output class.
+Define game-output interface class.
+Proper gameEvaluation comparison function.

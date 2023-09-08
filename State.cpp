@@ -23,32 +23,109 @@ uint8_t move::toBinary()
     return (board << 4) + space;
 }
 
+///// evaluationValue definitions /////
+
+void evaluationValue::init(player toWin, int depthToWin)
+{
+    playerToWin = toWin;
+    depth = depthToWin;
+}
+
+evaluationValue::evaluationValue()
+{
+    init(player::draw, 0);
+}
+
+bool evaluationValue::operator>(const evaluationValue& other)
+{
+    return true; // TODO implement this.
+}
+
 ///// Ultimate3TState definitions /////
 
-void Ultimate3TState::init()
+void Ultimate3TState::init
+(
+    evaluationValue eval,
+    std::vector<std::vector<player>> board, 
+    move bestMove,
+    activeBoard aBoard,
+    player activePlayer
+)
 {
-    evaluation_ = evaluation::draw;
-    board_ = std::vector<std::vector<spaceState>>(8, std::vector<spaceState>(8, spaceState::empty));
-    activeBoard_ = activeBoard::anyBoard; // game just started, so any board may be played on.
-    activePlayer_ = toPlay::x;
+    evaluation_ = eval;
+    board_ = board;
+    bestMove_ = bestMove;
+    activeBoard_ = aBoard;
+    activePlayer_ = activePlayer;
+}
+
+player Ultimate3TState::stateCheck(std::vector<player> checkBoard)
+{
+    // check each possible win combination for x and o
+    if (
+        checkBoard[0] xor checkBoard[3] xor checkBoard[6] xor player::x == 0 or
+        checkBoard[0] xor checkBoard[1] xor checkBoard[2] xor player::x == 0 or
+        checkBoard[0] xor checkBoard[4] xor checkBoard[8] xor player::x == 0 or
+        checkBoard[3] xor checkBoard[4] xor checkBoard[8] xor player::x == 0 or
+        checkBoard[6] xor checkBoard[7] xor checkBoard[8] xor player::x == 0 or
+        checkBoard[1] xor checkBoard[4] xor checkBoard[7] xor player::x == 0 or
+        checkBoard[2] xor checkBoard[5] xor checkBoard[8] xor player::x == 0 or
+        checkBoard[2] xor checkBoard[4] xor checkBoard[6] xor player::x == 0
+    ) { return player::x; }
+    if (
+        checkBoard[0] xor checkBoard[3] xor checkBoard[6] xor player::o == 0 or
+        checkBoard[0] xor checkBoard[1] xor checkBoard[2] xor player::o == 0 or
+        checkBoard[0] xor checkBoard[4] xor checkBoard[8] xor player::o == 0 or
+        checkBoard[3] xor checkBoard[4] xor checkBoard[8] xor player::o == 0 or
+        checkBoard[6] xor checkBoard[7] xor checkBoard[8] xor player::o == 0 or
+        checkBoard[1] xor checkBoard[4] xor checkBoard[7] xor player::o == 0 or
+        checkBoard[2] xor checkBoard[5] xor checkBoard[8] xor player::o == 0 or
+        checkBoard[2] xor checkBoard[4] xor checkBoard[6] xor player::o == 0
+    ) { return player::o; }
+    // if noone has won, is the game still going?
+    for (int i = 0; i < 8; i++)
+    {
+        if (checkBoard[i] == player::neither) { return player::neither; }
+    }
+    // if noone has won, and the game has ended, then it is a draw.
+    return player::draw;
 }
 
 Ultimate3TState::Ultimate3TState()
 {
-    init();
+    init
+    (
+        evaluationValue(),
+        std::vector<std::vector<player>>(8, std::vector<player>(8, player::neither)),
+        move(),
+        activeBoard::anyBoard,
+        player::x
+    );
 }
 
 Ultimate3TState::~Ultimate3TState() {}
 
 Ultimate3TState::Ultimate3TState(std::vector<uint64_t> binaryEncoding) {}
 
-evaluation Ultimate3TState::getEvaluation() { return evaluation_; }
+Ultimate3TState::Ultimate3TState(Ultimate3TState& source)
+{
+    init
+    (
+        source.getEvaluation(),
+        source.getBoard(),
+        source.getBestMove(),
+        source.getActiveBoard(),
+        source.getActivePlayer()
+    );
+}
 
-void Ultimate3TState::setEvaluation(evaluation newEvaluation) { evaluation_ = newEvaluation; }
+evaluationValue Ultimate3TState::getEvaluation() { return evaluation_; }
 
-std::vector<std::vector<spaceState>> Ultimate3TState::getBoard() { return board_; }
+void Ultimate3TState::setEvaluation(evaluationValue newEvaluation) { evaluation_ = newEvaluation; }
 
-void Ultimate3TState::setBoard(std::vector<std::vector<spaceState>> newBoard) { board_ = newBoard; }
+std::vector<std::vector<player>> Ultimate3TState::getBoard() { return board_; }
+
+void Ultimate3TState::setBoard(std::vector<std::vector<player>> newBoard) { board_ = newBoard; }
 
 move Ultimate3TState::getBestMove() { return bestMove_; }
 
@@ -58,13 +135,13 @@ activeBoard Ultimate3TState::getActiveBoard() { return activeBoard_; }
 
 void Ultimate3TState::setActiveBoard(activeBoard newActiveBoard) { activeBoard_ = newActiveBoard; }
 
-toPlay Ultimate3TState::getActivePlayer() { return activePlayer_; }
+player Ultimate3TState::getActivePlayer() { return activePlayer_; }
 
-void Ultimate3TState::setActivePlayer(toPlay newActivePlayer) { activePlayer_ = newActivePlayer; }
+void Ultimate3TState::setActivePlayer(player newActivePlayer) { activePlayer_ = newActivePlayer; }
 
-spaceState Ultimate3TState::getSpaceState(int boardNumber, int spaceNumber) { return board_[boardNumber][spaceNumber]; }
+player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber) { return board_[boardNumber][spaceNumber]; }
 
-void Ultimate3TState::setSpaceState(int boardNumber, int spaceNumber, spaceState newSpaceState) { board_[boardNumber][spaceNumber] = newSpaceState; }
+void Ultimate3TState::setSpacePlayed(int boardNumber, int spaceNumber, player whoPlayed) { board_[boardNumber][spaceNumber] = whoPlayed; }
 
 std::vector<move> Ultimate3TState::generateMoves()
 {
@@ -73,7 +150,7 @@ std::vector<move> Ultimate3TState::generateMoves()
     {
         for (int space = 0; space < 8; space++)
         {
-            if (getSpaceState(activeBoard_, space) == spaceState::empty)
+            if (getSpacePlayed(activeBoard_, space) == player::neither)
             {
                 legalMoves.push_back(move(activeBoard_, space));
             }
@@ -85,7 +162,7 @@ std::vector<move> Ultimate3TState::generateMoves()
     {
         for (int space = 0; space < 8; space++)
         {
-            if (getSpaceState(board, space) == spaceState::empty)
+            if (getSpacePlayed(board, space) == player::neither)
             {
                 legalMoves.push_back(move(board, space));
             }
@@ -95,6 +172,33 @@ std::vector<move> Ultimate3TState::generateMoves()
 }
 
 Ultimate3TState Ultimate3TState::generateSuccessorState(move playedMove)
+{
+    Ultimate3TState successor(*this); // create a copy of this State to work from
+    if ( // check for legal move
+        successor.getSpacePlayed(playedMove.board, playedMove.space) != player::neither
+        || (activeBoard_ != playedMove.board && activeBoard_ != activeBoard::anyBoard)
+        ) 
+    {
+        throw std::invalid_argument("Tried to generate seccessor from illegal move");
+    }
+    successor.setSpacePlayed
+    (
+        playedMove.board, playedMove.space, // where the move is to be played
+        successor.getActivePlayer() ? player::x : player::o // who is playing the move
+    );
+    successor.setActivePlayer(successor.getActivePlayer() ? player::o : player::x); // make it the other player's turn.
+    // determine if the next board to be played on is full. if it is, then any board can be played on. If not, the board corresponding to the space of the played move must be played on.
+    successor.setActiveBoard(activeBoard::anyBoard);
+    for (int space = 0; space < 8; space++)
+    {
+        if (successor.getSpacePlayed(playedMove.space, space) == player::neither)
+        {
+            successor.setActiveBoard(activeBoard(playedMove.space));
+        }
+    }
+}
+
+bool Ultimate3TState::isTerminalState()
 {
     
 }
