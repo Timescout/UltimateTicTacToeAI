@@ -107,7 +107,7 @@ private:
     /// @brief Checks the State of the game
     /// @param checkBoard A vector of player enums that holds info about which players have played in which spaces
     /// @return The player who will win the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
-    player stateCheck(std::vector<player> checkBoard);
+    player utility(std::vector<player> checkBoard);
 
 public:
 
