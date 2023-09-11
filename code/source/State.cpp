@@ -38,7 +38,11 @@ evaluationValue::evaluationValue()
 
 bool evaluationValue::operator>(const evaluationValue& other)
 {
-    return true; // TODO implement this.
+    if (playerToWin == x && other.playerToWin == o)
+    {
+        return true;
+    }
+    return false;
 }
 
 ///// Ultimate3TState definitions /////
@@ -59,7 +63,7 @@ void Ultimate3TState::init
     activePlayer_ = activePlayer;
 }
 
-player Ultimate3TState::stateCheck(std::vector<player> checkBoard)
+player Ultimate3TState::utility(std::vector<player> checkBoard)
 {
     // check each possible win combination for x and o
     if (
@@ -196,9 +200,16 @@ Ultimate3TState Ultimate3TState::generateSuccessorState(move playedMove)
             successor.setActiveBoard(activeBoard(playedMove.space));
         }
     }
+    return successor;
 }
 
 bool Ultimate3TState::isTerminalState()
 {
-    
+    std::vector<player> superBoard(9, player::neither);
+    for (int i = 0; i < 8; i++)
+    {
+        superBoard[i] = utility(board_[i]);
+    }
+    // if the game is still going, utility will return player::neither. otherwise the game has ended somehow.
+    return utility(superBoard) != player::neither;
 }
