@@ -1,5 +1,5 @@
 
-
+The goal of this project is to create an AI that can play Ultimate Tic Tac Toe (U3T). This is a solved game so the outcome is known if both players play optimaly. That combined with the small state space of U3T determined the strategy that this AI will use to play. The AI will create a table of states and moves where the AI can look up the correct move to play in each state. To create this table, it will use a minimax algorithm to search through the state space. 
 
 
 ##### State encoding
