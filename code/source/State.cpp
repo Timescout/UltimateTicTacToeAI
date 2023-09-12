@@ -1,4 +1,5 @@
 #include "State.h"
+#include <stdexcept>
 
 ///// move struct definitions /////
 
@@ -33,16 +34,77 @@ void evaluationValue::init(player toWin, int depthToWin)
 
 evaluationValue::evaluationValue()
 {
-    init(player::draw, 0);
+    init(player::neither, 0);
 }
 
-bool evaluationValue::operator>(const evaluationValue& other)
+bool const evaluationValue::operator==(const evaluationValue& other)
 {
-    if (playerToWin == x && other.playerToWin == o)
+    return playerToWin == other.playerToWin && depth == other.depth;
+}
+
+bool const evaluationValue::operator!=(const evaluationValue& other)
+{
+    return !(*this == other);
+}
+
+bool const evaluationValue::operator>(const evaluationValue& other)
+{
+    int value, othersValue;
+
+    // determine the value of this state.
+    switch (playerToWin)
     {
-        return true;
+    case player::x:
+        value = 1000;
+        value -= depth;
+        break;
+    case player::o:
+        value = -1000;
+        value += depth;
+        break;
+    case player::draw:
+        value = 0;
+        break;
+    case player::neither:
+        throw std::invalid_argument("Passed indeterminant evaluationValue into comparison");
+        break;
     }
-    return false;
+
+    // determine the other's value
+    switch (other.playerToWin)
+    {
+    case player::x:
+        othersValue = 1000;
+        othersValue -= depth;
+        break;
+    case player::o:
+        othersValue = -1000;
+        othersValue += depth;
+        break;
+    case player::draw:
+        othersValue = 0;
+        break;
+    case player::neither:
+        throw std::invalid_argument("Passed indeterminant evaluationValue into comparison");
+        break;
+    }
+
+    return value > othersValue;
+}
+
+bool const evaluationValue::operator>=(const evaluationValue& other)
+{
+    return *this > other || *this == other;
+}
+
+bool const evaluationValue::operator<(const evaluationValue& other)
+{
+    return !(*this >= other);
+}
+
+bool const evaluationValue::operator<=(const evaluationValue& other)
+{
+    return !(*this > other);
 }
 
 ///// Ultimate3TState definitions /////
@@ -63,33 +125,67 @@ void Ultimate3TState::init
     activePlayer_ = activePlayer;
 }
 
-player Ultimate3TState::utility(std::vector<player> checkBoard)
+player Ultimate3TState::utility()
 {
+    // Look at the state in each subBoard, then look at the state in the superBoard.
+    std::vector<player> littleBoardUtilities(9); 
+    for (int i = 0; i < 8; i++)
+    {
+        // check each possible win combination for x and o
+        if (
+            board_[i][0] xor board_[i][3] xor board_[i][6] xor player::x == 0 or
+            board_[i][0] xor board_[i][1] xor board_[i][2] xor player::x == 0 or
+            board_[i][0] xor board_[i][4] xor board_[i][8] xor player::x == 0 or
+            board_[i][3] xor board_[i][4] xor board_[i][8] xor player::x == 0 or
+            board_[i][6] xor board_[i][7] xor board_[i][8] xor player::x == 0 or
+            board_[i][1] xor board_[i][4] xor board_[i][7] xor player::x == 0 or
+            board_[i][2] xor board_[i][5] xor board_[i][8] xor player::x == 0 or
+            board_[i][2] xor board_[i][4] xor board_[i][6] xor player::x == 0
+        ) { littleBoardUtilities[i] = player::x; }
+        if (
+            board_[i][0] xor board_[i][3] xor board_[i][6] xor player::o == 0 or
+            board_[i][0] xor board_[i][1] xor board_[i][2] xor player::o == 0 or
+            board_[i][0] xor board_[i][4] xor board_[i][8] xor player::o == 0 or
+            board_[i][3] xor board_[i][4] xor board_[i][8] xor player::o == 0 or
+            board_[i][6] xor board_[i][7] xor board_[i][8] xor player::o == 0 or
+            board_[i][1] xor board_[i][4] xor board_[i][7] xor player::o == 0 or
+            board_[i][2] xor board_[i][5] xor board_[i][8] xor player::o == 0 or
+            board_[i][2] xor board_[i][4] xor board_[i][6] xor player::o == 0
+        ) { littleBoardUtilities[i] = player::o; }
+        // if noone has won, is the game still going?
+        for (int i = 0; i < 8; i++)
+        {
+            if (board_[i][i] == player::neither) { littleBoardUtilities[i] = player::neither; }
+        }
+        // if noone has won, and the game has ended, then it is a draw.
+        littleBoardUtilities[i] = player::draw;
+    }
+
     // check each possible win combination for x and o
     if (
-        checkBoard[0] xor checkBoard[3] xor checkBoard[6] xor player::x == 0 or
-        checkBoard[0] xor checkBoard[1] xor checkBoard[2] xor player::x == 0 or
-        checkBoard[0] xor checkBoard[4] xor checkBoard[8] xor player::x == 0 or
-        checkBoard[3] xor checkBoard[4] xor checkBoard[8] xor player::x == 0 or
-        checkBoard[6] xor checkBoard[7] xor checkBoard[8] xor player::x == 0 or
-        checkBoard[1] xor checkBoard[4] xor checkBoard[7] xor player::x == 0 or
-        checkBoard[2] xor checkBoard[5] xor checkBoard[8] xor player::x == 0 or
-        checkBoard[2] xor checkBoard[4] xor checkBoard[6] xor player::x == 0
+        littleBoardUtilities[0] xor littleBoardUtilities[3] xor littleBoardUtilities[6] xor player::x == 0 or
+        littleBoardUtilities[0] xor littleBoardUtilities[1] xor littleBoardUtilities[2] xor player::x == 0 or
+        littleBoardUtilities[0] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::x == 0 or
+        littleBoardUtilities[3] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::x == 0 or
+        littleBoardUtilities[6] xor littleBoardUtilities[7] xor littleBoardUtilities[8] xor player::x == 0 or
+        littleBoardUtilities[1] xor littleBoardUtilities[4] xor littleBoardUtilities[7] xor player::x == 0 or
+        littleBoardUtilities[2] xor littleBoardUtilities[5] xor littleBoardUtilities[8] xor player::x == 0 or
+        littleBoardUtilities[2] xor littleBoardUtilities[4] xor littleBoardUtilities[6] xor player::x == 0
     ) { return player::x; }
     if (
-        checkBoard[0] xor checkBoard[3] xor checkBoard[6] xor player::o == 0 or
-        checkBoard[0] xor checkBoard[1] xor checkBoard[2] xor player::o == 0 or
-        checkBoard[0] xor checkBoard[4] xor checkBoard[8] xor player::o == 0 or
-        checkBoard[3] xor checkBoard[4] xor checkBoard[8] xor player::o == 0 or
-        checkBoard[6] xor checkBoard[7] xor checkBoard[8] xor player::o == 0 or
-        checkBoard[1] xor checkBoard[4] xor checkBoard[7] xor player::o == 0 or
-        checkBoard[2] xor checkBoard[5] xor checkBoard[8] xor player::o == 0 or
-        checkBoard[2] xor checkBoard[4] xor checkBoard[6] xor player::o == 0
+        littleBoardUtilities[0] xor littleBoardUtilities[3] xor littleBoardUtilities[6] xor player::o == 0 or
+        littleBoardUtilities[0] xor littleBoardUtilities[1] xor littleBoardUtilities[2] xor player::o == 0 or
+        littleBoardUtilities[0] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::o == 0 or
+        littleBoardUtilities[3] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::o == 0 or
+        littleBoardUtilities[6] xor littleBoardUtilities[7] xor littleBoardUtilities[8] xor player::o == 0 or
+        littleBoardUtilities[1] xor littleBoardUtilities[4] xor littleBoardUtilities[7] xor player::o == 0 or
+        littleBoardUtilities[2] xor littleBoardUtilities[5] xor littleBoardUtilities[8] xor player::o == 0 or
+        littleBoardUtilities[2] xor littleBoardUtilities[4] xor littleBoardUtilities[6] xor player::o == 0
     ) { return player::o; }
     // if noone has won, is the game still going?
     for (int i = 0; i < 8; i++)
     {
-        if (checkBoard[i] == player::neither) { return player::neither; }
+        if (littleBoardUtilities[i] == player::neither) { return player::neither; }
     }
     // if noone has won, and the game has ended, then it is a draw.
     return player::draw;
@@ -205,11 +301,6 @@ Ultimate3TState Ultimate3TState::generateSuccessorState(move playedMove)
 
 bool Ultimate3TState::isTerminalState()
 {
-    std::vector<player> superBoard(9, player::neither);
-    for (int i = 0; i < 8; i++)
-    {
-        superBoard[i] = utility(board_[i]);
-    }
     // if the game is still going, utility will return player::neither. otherwise the game has ended somehow.
-    return utility(superBoard) != player::neither;
+    return utility() != player::neither;
 }

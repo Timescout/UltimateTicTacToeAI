@@ -56,7 +56,13 @@ public:
 
     evaluationValue();
 
-    bool operator>(const evaluationValue& other);
+    ///// Comparison methods /////
+    bool const operator==(const evaluationValue& other);
+    bool const operator!=(const evaluationValue& other);
+    bool const operator>(const evaluationValue& other);
+    bool const operator>=(const evaluationValue& other);
+    bool const operator<(const evaluationValue& other);
+    bool const operator<=(const evaluationValue& other);
 };
 
 // Defines encoding for which board is active.
@@ -104,10 +110,6 @@ private:
         player activePlayer
     );
 
-    /// @brief Checks the State of the game
-    /// @param checkBoard A vector of player enums that holds info about which players have played in which spaces
-    /// @return The player who will win the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
-    player utility(std::vector<player> checkBoard);
 
 public:
 
@@ -160,5 +162,10 @@ public:
     /// @brief Checks if this state is a terminal state. This can be because a player won, or there are no remaining legal moves.
     /// @return true if the state is terminal, false otherwise.
     bool isTerminalState();
+
+    /// @brief Checks the utility of the game
+    /// @param checkBoard A vector of player enums that holds info about which players have played in which spaces
+    /// @return The player who will win the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
+    player utility();
 
 };
