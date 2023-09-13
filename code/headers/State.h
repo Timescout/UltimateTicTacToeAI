@@ -55,6 +55,7 @@ public:
     int depth;
 
     evaluationValue();
+    evaluationValue(player toWin, int depthToWin);
 
     ///// Comparison methods /////
     bool const operator==(const evaluationValue& other);
@@ -109,7 +110,6 @@ private:
         activeBoard aBoard, 
         player activePlayer
     );
-
 
 public:
 

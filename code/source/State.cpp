@@ -37,6 +37,11 @@ evaluationValue::evaluationValue()
     init(player::neither, 0);
 }
 
+evaluationValue::evaluationValue(player toWin, int depthToWin)
+{
+    init(toWin, depthToWin);
+}
+
 bool const evaluationValue::operator==(const evaluationValue& other)
 {
     return playerToWin == other.playerToWin && depth == other.depth;
@@ -50,16 +55,21 @@ bool const evaluationValue::operator!=(const evaluationValue& other)
 bool const evaluationValue::operator>(const evaluationValue& other)
 {
     int value, othersValue;
+    // check that Depth is within acceptable range, 0 to 81 inclusive.
+    if (0 > depth or depth > 81 or 0 > other.depth or other.depth > 81)
+    { 
+        throw std::invalid_argument("Passed evaluationValue with invalid depth");
+    }
 
     // determine the value of this state.
     switch (playerToWin)
     {
     case player::x:
-        value = 1000;
+        value = 100;
         value -= depth;
         break;
     case player::o:
-        value = -1000;
+        value = -100;
         value += depth;
         break;
     case player::draw:
@@ -74,12 +84,12 @@ bool const evaluationValue::operator>(const evaluationValue& other)
     switch (other.playerToWin)
     {
     case player::x:
-        othersValue = 1000;
-        othersValue -= depth;
+        othersValue = 100;
+        othersValue -= other.depth;
         break;
     case player::o:
-        othersValue = -1000;
-        othersValue += depth;
+        othersValue = -100;
+        othersValue += other.depth;
         break;
     case player::draw:
         othersValue = 0;
