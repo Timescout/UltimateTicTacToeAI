@@ -1,3 +1,7 @@
+/* Andrew Bergman
+9-14-23
+Tests for evaluationValue struct. The bulk of tests are for the comparisons, since that is the most complex part of evaluationValues. 
+*/
 
 #include "State.h"
 #include "gtest/gtest.h"
@@ -71,4 +75,41 @@ TEST_P(EvaluationUnitTestThrowResult, GreaterThan_EitherInvalid_Throws_InvalidAr
     std::vector<evaluationValue> values = GetParam();
     
     EXPECT_THROW(values[0] > values[1], std::invalid_argument);
+}
+
+TEST(EvaluationValueComparisonTests, EqualTo_EqualInput_Returns_True)
+{
+    evaluationValue firstValue(player::x, 0);
+    evaluationValue secondValue(player::x, 0);
+
+    EXPECT_TRUE(firstValue == secondValue);
+}
+
+TEST(EvaluationValueComparisonTests, EqualTo_SymmetricalProperty_Returns_True)
+{
+    evaluationValue value;
+
+    EXPECT_TRUE(value == value);
+}
+
+TEST(EvaluationValueComparisonTests, EqualTo_UnequalInput_Returns_False)
+{
+    evaluationValue firstValue(player::x, 0);
+    evaluationValue secondValue(player::o, 88);
+
+    EXPECT_FALSE(firstValue == secondValue);
+}
+
+TEST(EvaluationValueComparisonTests, NotEqual_EqualInputs_Returns_False)
+{
+    evaluationValue firstValue, secondValue;
+
+    EXPECT_FALSE(firstValue != secondValue);
+}
+
+TEST(EvaluationValueComparisonTests, NotEqual_UnequalInputs_Returns_True)
+{
+    evaluationValue firstValue(player::x, 0), secondValue(player::x, 1);
+
+    EXPECT_TRUE(firstValue != secondValue);
 }
