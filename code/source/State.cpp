@@ -3,20 +3,29 @@
 
 ///// move struct definitions /////
 
-move::move()
-:   board(0),
-    space(0)
-{}
+void move::init(activeBoard moveBoard, uint8_t moveSpace)
+{
+    if (moveBoard > activeBoard::board8 or moveSpace > 8) 
+    {
+        throw std::out_of_range("Tried to create move outside of board");
+    }
+    board = moveBoard;
+    space = moveSpace;
+}
 
-move::move(uint8_t board, uint8_t space) 
-:   board(board), 
-    space(space)
-{}
+move::move()
+{
+    init(activeBoard::board0, 0);
+}
+
+move::move(activeBoard moveBoard, uint8_t moveSpace) 
+{
+    init(moveBoard, moveSpace);
+}
 
 move::move(uint8_t binary)
 {
-    board = binary >> 4; // select the top bits
-    space = binary % 0x10000; // select the bottom bits
+    init(activeBoard(binary >> 4), binary & 0b1111);
 }
 
 uint8_t move::toBinary() 
@@ -138,7 +147,7 @@ void Ultimate3TState::init
 player Ultimate3TState::utility()
 {
     // Look at the state in each subBoard, then look at the state in the superBoard.
-    std::vector<player> littleBoardUtilities(9); 
+    std::vector<player> littleBoardUtilities(TicTacToeNumberOfSpaces); 
     for (int i = 0; i < 8; i++)
     {
         // check each possible win combination for x and o
@@ -206,7 +215,7 @@ Ultimate3TState::Ultimate3TState()
     init
     (
         evaluationValue(),
-        std::vector<std::vector<player>>(8, std::vector<player>(8, player::neither)),
+        std::vector<std::vector<player>>(TicTacToeNumberOfSpaces, std::vector<player>(TicTacToeNumberOfSpaces, player::neither)),
         move(),
         activeBoard::anyBoard,
         player::x
@@ -221,44 +230,71 @@ Ultimate3TState::Ultimate3TState(Ultimate3TState& source)
 {
     init
     (
-        source.getEvaluation(),
-        source.getBoard(),
-        source.getBestMove(),
-        source.getActiveBoard(),
-        source.getActivePlayer()
+        source.evaluation_,
+        source.board_,
+        source.bestMove_,
+        source.activeBoard_,
+        source.activePlayer_
     );
 }
 
-evaluationValue Ultimate3TState::getEvaluation() { return evaluation_; }
+const evaluationValue Ultimate3TState::getEvaluation() { return evaluation_; }
 
 void Ultimate3TState::setEvaluation(evaluationValue newEvaluation) { evaluation_ = newEvaluation; }
 
-std::vector<std::vector<player>> Ultimate3TState::getBoard() { return board_; }
+const std::vector<std::vector<player>> Ultimate3TState::getBoard() { return board_; }
 
-void Ultimate3TState::setBoard(std::vector<std::vector<player>> newBoard) { board_ = newBoard; }
+void Ultimate3TState::setBoard(std::vector<std::vector<player>> newBoard) {
+    if ((newBoard.size() != TicTacToeNumberOfSpaces))
+    {
+        throw std::invalid_argument("Tried to setBoard with invalid board");
+    }
+    for (int i = 0; i < TicTacToeNumberOfSpaces - 1; i++)
+    {
+        if (newBoard[i].size() != TicTacToeNumberOfSpaces)
+        {
+            throw std::invalid_argument("Tried to setBoard with invalid board");
+        }
+    }
+    board_ = newBoard;
+}
 
-move Ultimate3TState::getBestMove() { return bestMove_; }
+const move Ultimate3TState::getBestMove() { return bestMove_; }
 
 void Ultimate3TState::setBestMove(move newBestMove) { bestMove_ = newBestMove; }
 
-activeBoard Ultimate3TState::getActiveBoard() { return activeBoard_; }
+const activeBoard Ultimate3TState::getActiveBoard() { return activeBoard_; }
 
 void Ultimate3TState::setActiveBoard(activeBoard newActiveBoard) { activeBoard_ = newActiveBoard; }
 
-player Ultimate3TState::getActivePlayer() { return activePlayer_; }
+const player Ultimate3TState::getActivePlayer() { return activePlayer_; }
 
 void Ultimate3TState::setActivePlayer(player newActivePlayer) { activePlayer_ = newActivePlayer; }
 
-player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber) { return board_[boardNumber][spaceNumber]; }
+const player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber) 
+{
+    if ((boardNumber >= TicTacToeNumberOfSpaces-1) or (spaceNumber >= TicTacToeNumberOfSpaces))
+    {
+        throw std::out_of_range("Tried to getSpacePlayed out of board Range");
+    }
+    return board_[boardNumber][spaceNumber];
+}
 
-void Ultimate3TState::setSpacePlayed(int boardNumber, int spaceNumber, player whoPlayed) { board_[boardNumber][spaceNumber] = whoPlayed; }
+void Ultimate3TState::setSpacePlayed(int boardNumber, int spaceNumber, player whoPlayed) 
+{
+    if ((boardNumber >= TicTacToeNumberOfSpaces-1) or (spaceNumber >= TicTacToeNumberOfSpaces))
+    {
+        throw std::out_of_range("Tried to setSpacePlayed out of board Range");
+    }
+    board_[boardNumber][spaceNumber] = whoPlayed;
+}
 
 std::vector<move> Ultimate3TState::generateMoves()
 {
     std::vector<move> legalMoves;
     if (activeBoard_ != activeBoard::anyBoard)
     {
-        for (int space = 0; space < 8; space++)
+        for (int space = 0; space < TicTacToeNumberOfSpaces - 1; space++)
         {
             if (getSpacePlayed(activeBoard_, space) == player::neither)
             {
@@ -268,13 +304,13 @@ std::vector<move> Ultimate3TState::generateMoves()
         if (legalMoves.size() > 0) { return legalMoves; }
     }
     // the active board is any board, or the active board had no legal moves.
-    for (int board = 0; board < 8; board++)
+    for (int board = 0; board < TicTacToeNumberOfSpaces - 1; board++)
     {
-        for (int space = 0; space < 8; space++)
+        for (int space = 0; space < TicTacToeNumberOfSpaces - 1; space++)
         {
             if (getSpacePlayed(board, space) == player::neither)
             {
-                legalMoves.push_back(move(board, space));
+                legalMoves.push_back(move(activeBoard(board), space));
             }
         }
     }

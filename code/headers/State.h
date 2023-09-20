@@ -132,26 +132,30 @@ public:
     Ultimate3TState(std::vector<uint64_t> binaryEncoding);
 
     /// @brief Copy constructor.
-    Ultimate3TState(const Ultimate3TState& source);
+    Ultimate3TState(Ultimate3TState& source);
 
     ///// Get and set /////
 
-    evaluationValue getEvaluation();
+    const evaluationValue getEvaluation();
     void setEvaluation(evaluationValue newEvaluation);
 
-    std::vector<std::vector<player>> getBoard();
+    const std::vector<std::vector<player>> getBoard();
     void setBoard(std::vector<std::vector<player>> newBoard);
 
-    move getBestMove();
+    const move getBestMove();
     void setBestMove(move newBestMove);
 
-    activeBoard getActiveBoard();
+    const activeBoard getActiveBoard();
     void setActiveBoard(activeBoard newActiveBoard);
 
-    player getActivePlayer();
+    const player getActivePlayer();
     void setActivePlayer(player newActivePlayer);
 
-    player getSpacePlayed(int boardNumber, int spaceNumber);
+    const player getSpacePlayed(int boardNumber, int spaceNumber);
+    /// @brief Sets a space state, as if a player played their during their turn. Throws an error if the indecies are outside of the possible board values.
+    /// @param boardNumber The board to play on.
+    /// @param spaceNumber The space to play on.
+    /// @param whoPlayed Which player plays this move.
     void setSpacePlayed(int boardNumber, int spaceNumber, player whoPlayed);
 
     ///// Functions /////
