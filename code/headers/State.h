@@ -10,19 +10,46 @@ This file defines a game state for ultimate tic tac toe and it's encoding to a f
 #include <vector>
 #include <stdexcept>
 
+// Defines encoding for which board is active. 
+enum activeBoard : uint8_t
+{
+    board0    = 0b0000,
+    board1    = 0b0001,
+    board2    = 0b0010,
+    board3    = 0b0011,
+    board4    = 0b0100,
+    board5    = 0b0101,
+    board6    = 0b0111,
+    board7    = 0b1000,
+    board8    = 0b1001,
+    anyBoard  = 0b1111
+};
+
 // a move in this game has two parts the board and space, which each range from 0 to 8 inclusive.
+/// @brief Represents a player. Context gives this more meaning, it could mean that this player is winning or that it is this player's turn
+enum player : uint8_t
+{
+    x,
+    o,
+    draw,
+    neither
+};
+
 struct move
 {
-    uint8_t board;
+private:
+    void init(activeBoard moveBoard, uint8_t moveSpace);
+public:
+    activeBoard board;
     uint8_t space;
 
     /// @brief default constructor
     move();
 
     /// @brief Argumented constructor
-    /// @param board The board of this move
-    /// @param space The space of this move
-    move(uint8_t board, uint8_t space);
+    /// @param moveBoard The board of this move, Note this cannot be activeBoard::anyBoard which will throw an error if passed.
+    /// @param moveSpace The space of this move, must be between 0 and 8 inclusive.
+    move(activeBoard moveBoard, uint8_t moveSpace);
 
     /// @brief Construct a move from binary.
     /// @param binary The binary to convert to a move.
@@ -31,15 +58,6 @@ struct move
     /// @brief Convert this move to a binary representation
     /// @return A binary representation of this move.
     uint8_t toBinary();
-};
-
-/// @brief Represents a player. Context gives this more meaning, it could mean that this player is winning or that it is this player's turn
-enum player 
-{
-    x,
-    o,
-    draw,
-    neither
 };
 
 /// @brief In order to ensure more intelligent behavior, our evaluation must include more information than just the game's value.
@@ -66,25 +84,13 @@ public:
     bool const operator<=(const evaluationValue& other);
 };
 
-// Defines encoding for which board is active.
-enum activeBoard
-{
-    board0,
-    board1,
-    board2,
-    board3,
-    board4,
-    board5,
-    board6,
-    board7,
-    board8,
-    anyBoard = 0x1111
-};
-
 /// @brief A game state for ultimate tic tac toe. 
 class Ultimate3TState
 {
 private:
+    /// @brief The number of Spaces in a normal Tic Tac Toe grid. This is used throughout to check bounds and to prevent magic numbers.
+    static const int TicTacToeNumberOfSpaces = 9;
+
     /// @brief The evaluation of this position. -1 is a win for player O, 1 is a win for player X, and 0 is a draw.
     evaluationValue evaluation_;
 
@@ -126,7 +132,7 @@ public:
     Ultimate3TState(std::vector<uint64_t> binaryEncoding);
 
     /// @brief Copy constructor.
-    Ultimate3TState(Ultimate3TState& source);
+    Ultimate3TState(const Ultimate3TState& source);
 
     ///// Get and set /////
 
@@ -165,7 +171,7 @@ public:
 
     /// @brief Checks the utility of the game
     /// @param checkBoard A vector of player enums that holds info about which players have played in which spaces
-    /// @return The player who will win the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
+    /// @return The result of the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
     player utility();
 
 };
