@@ -273,7 +273,7 @@ void Ultimate3TState::setActivePlayer(player newActivePlayer) { activePlayer_ = 
 
 const player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber) 
 {
-    if ((boardNumber >= TicTacToeNumberOfSpaces-1) or (spaceNumber >= TicTacToeNumberOfSpaces))
+    if ((boardNumber >= TicTacToeNumberOfSpaces) or (spaceNumber >= TicTacToeNumberOfSpaces))
     {
         throw std::out_of_range("Tried to getSpacePlayed out of board Range");
     }
@@ -294,7 +294,7 @@ std::vector<move> Ultimate3TState::generateMoves()
     std::vector<move> legalMoves;
     if (activeBoard_ != activeBoard::anyBoard)
     {
-        for (int space = 0; space < TicTacToeNumberOfSpaces - 1; space++)
+        for (int space = 0; space < TicTacToeNumberOfSpaces; space++)
         {
             if (getSpacePlayed(activeBoard_, space) == player::neither)
             {
@@ -304,9 +304,9 @@ std::vector<move> Ultimate3TState::generateMoves()
         if (legalMoves.size() > 0) { return legalMoves; }
     }
     // the active board is any board, or the active board had no legal moves.
-    for (int board = 0; board < TicTacToeNumberOfSpaces - 1; board++)
+    for (int board = 0; board < TicTacToeNumberOfSpaces; board++)
     {
-        for (int space = 0; space < TicTacToeNumberOfSpaces - 1; space++)
+        for (int space = 0; space < TicTacToeNumberOfSpaces; space++)
         {
             if (getSpacePlayed(board, space) == player::neither)
             {

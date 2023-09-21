@@ -97,6 +97,9 @@ private:
     /// @brief The board associated with this state. Keeps track of which player has played in a space.
     std::vector<std::vector<player>> board_;
 
+    /// @brief Stores the ongoing state of who has won subgames. 
+    std::vector<player> superBoardResults_;
+
     /// @brief The evaluated best move in this state.
     move bestMove_;
 
@@ -116,6 +119,11 @@ private:
         activeBoard aBoard, 
         player activePlayer
     );
+
+    /// @brief Gets the result of the board.
+    /// @param board The board to check.
+    /// @return The winner of the board, draw if it is a draw, or neither if the game is still ongoing. 
+    player boardResults(std::vector<player> board);
 
 public:
 
