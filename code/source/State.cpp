@@ -132,6 +132,7 @@ void Ultimate3TState::init
 (
     evaluationValue eval,
     std::vector<std::vector<player>> board, 
+    std::vector<player> superBoardResults,
     move bestMove,
     activeBoard aBoard,
     player activePlayer
@@ -139,75 +140,47 @@ void Ultimate3TState::init
 {
     evaluation_ = eval;
     board_ = board;
+    superBoardResults_ = superBoardResults;
     bestMove_ = bestMove;
     activeBoard_ = aBoard;
     activePlayer_ = activePlayer;
 }
 
-player Ultimate3TState::utility()
+player Ultimate3TState::boardResults(std::vector<player> board) 
 {
-    // Look at the state in each subBoard, then look at the state in the superBoard.
-    std::vector<player> littleBoardUtilities(TicTacToeNumberOfSpaces); 
-    for (int i = 0; i < 8; i++)
-    {
-        // check each possible win combination for x and o
-        if (
-            board_[i][0] xor board_[i][3] xor board_[i][6] xor player::x == 0 or
-            board_[i][0] xor board_[i][1] xor board_[i][2] xor player::x == 0 or
-            board_[i][0] xor board_[i][4] xor board_[i][8] xor player::x == 0 or
-            board_[i][3] xor board_[i][4] xor board_[i][8] xor player::x == 0 or
-            board_[i][6] xor board_[i][7] xor board_[i][8] xor player::x == 0 or
-            board_[i][1] xor board_[i][4] xor board_[i][7] xor player::x == 0 or
-            board_[i][2] xor board_[i][5] xor board_[i][8] xor player::x == 0 or
-            board_[i][2] xor board_[i][4] xor board_[i][6] xor player::x == 0
-        ) { littleBoardUtilities[i] = player::x; }
-        if (
-            board_[i][0] xor board_[i][3] xor board_[i][6] xor player::o == 0 or
-            board_[i][0] xor board_[i][1] xor board_[i][2] xor player::o == 0 or
-            board_[i][0] xor board_[i][4] xor board_[i][8] xor player::o == 0 or
-            board_[i][3] xor board_[i][4] xor board_[i][8] xor player::o == 0 or
-            board_[i][6] xor board_[i][7] xor board_[i][8] xor player::o == 0 or
-            board_[i][1] xor board_[i][4] xor board_[i][7] xor player::o == 0 or
-            board_[i][2] xor board_[i][5] xor board_[i][8] xor player::o == 0 or
-            board_[i][2] xor board_[i][4] xor board_[i][6] xor player::o == 0
-        ) { littleBoardUtilities[i] = player::o; }
-        // if noone has won, is the game still going?
-        for (int i = 0; i < 8; i++)
-        {
-            if (board_[i][i] == player::neither) { littleBoardUtilities[i] = player::neither; }
-        }
-        // if noone has won, and the game has ended, then it is a draw.
-        littleBoardUtilities[i] = player::draw;
-    }
-
     // check each possible win combination for x and o
     if (
-        littleBoardUtilities[0] xor littleBoardUtilities[3] xor littleBoardUtilities[6] xor player::x == 0 or
-        littleBoardUtilities[0] xor littleBoardUtilities[1] xor littleBoardUtilities[2] xor player::x == 0 or
-        littleBoardUtilities[0] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::x == 0 or
-        littleBoardUtilities[3] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::x == 0 or
-        littleBoardUtilities[6] xor littleBoardUtilities[7] xor littleBoardUtilities[8] xor player::x == 0 or
-        littleBoardUtilities[1] xor littleBoardUtilities[4] xor littleBoardUtilities[7] xor player::x == 0 or
-        littleBoardUtilities[2] xor littleBoardUtilities[5] xor littleBoardUtilities[8] xor player::x == 0 or
-        littleBoardUtilities[2] xor littleBoardUtilities[4] xor littleBoardUtilities[6] xor player::x == 0
+        board[0] xor board[3] xor board[6] xor player::x == 0 or
+        board[0] xor board[1] xor board[2] xor player::x == 0 or
+        board[0] xor board[4] xor board[8] xor player::x == 0 or
+        board[3] xor board[4] xor board[8] xor player::x == 0 or
+        board[6] xor board[7] xor board[8] xor player::x == 0 or
+        board[1] xor board[4] xor board[7] xor player::x == 0 or
+        board[2] xor board[5] xor board[8] xor player::x == 0 or
+        board[2] xor board[4] xor board[6] xor player::x == 0
     ) { return player::x; }
     if (
-        littleBoardUtilities[0] xor littleBoardUtilities[3] xor littleBoardUtilities[6] xor player::o == 0 or
-        littleBoardUtilities[0] xor littleBoardUtilities[1] xor littleBoardUtilities[2] xor player::o == 0 or
-        littleBoardUtilities[0] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::o == 0 or
-        littleBoardUtilities[3] xor littleBoardUtilities[4] xor littleBoardUtilities[8] xor player::o == 0 or
-        littleBoardUtilities[6] xor littleBoardUtilities[7] xor littleBoardUtilities[8] xor player::o == 0 or
-        littleBoardUtilities[1] xor littleBoardUtilities[4] xor littleBoardUtilities[7] xor player::o == 0 or
-        littleBoardUtilities[2] xor littleBoardUtilities[5] xor littleBoardUtilities[8] xor player::o == 0 or
-        littleBoardUtilities[2] xor littleBoardUtilities[4] xor littleBoardUtilities[6] xor player::o == 0
+        board[0] xor board[3] xor board[6] xor player::o == 0 or
+        board[0] xor board[1] xor board[2] xor player::o == 0 or
+        board[0] xor board[4] xor board[8] xor player::o == 0 or
+        board[3] xor board[4] xor board[8] xor player::o == 0 or
+        board[6] xor board[7] xor board[8] xor player::o == 0 or
+        board[1] xor board[4] xor board[7] xor player::o == 0 or
+        board[2] xor board[5] xor board[8] xor player::o == 0 or
+        board[2] xor board[4] xor board[6] xor player::o == 0
     ) { return player::o; }
     // if noone has won, is the game still going?
     for (int i = 0; i < 8; i++)
     {
-        if (littleBoardUtilities[i] == player::neither) { return player::neither; }
+        if (board[i] == player::neither) { return player::neither; }
     }
     // if noone has won, and the game has ended, then it is a draw.
     return player::draw;
+}
+
+player Ultimate3TState::utility()
+{
+    return boardResults(superBoardResults_);
 }
 
 Ultimate3TState::Ultimate3TState()
@@ -216,6 +189,7 @@ Ultimate3TState::Ultimate3TState()
     (
         evaluationValue(),
         std::vector<std::vector<player>>(TicTacToeNumberOfSpaces, std::vector<player>(TicTacToeNumberOfSpaces, player::neither)),
+        std::vector<player>(TicTacToeNumberOfSpaces, player::neither),
         move(),
         activeBoard::anyBoard,
         player::x
@@ -232,6 +206,7 @@ Ultimate3TState::Ultimate3TState(Ultimate3TState& source)
     (
         source.evaluation_,
         source.board_,
+        source.superBoardResults_,
         source.bestMove_,
         source.activeBoard_,
         source.activePlayer_
@@ -287,6 +262,11 @@ void Ultimate3TState::setSpacePlayed(int boardNumber, int spaceNumber, player wh
         throw std::out_of_range("Tried to setSpacePlayed out of board Range");
     }
     board_[boardNumber][spaceNumber] = whoPlayed;
+    // if this move causes a player to win, update the superBoard.
+    if (superBoardResults_[boardNumber] == player::neither) 
+    { 
+        superBoardResults_[boardNumber] = boardResults(board_[boardNumber]);
+    }
 }
 
 std::vector<move> Ultimate3TState::generateMoves()

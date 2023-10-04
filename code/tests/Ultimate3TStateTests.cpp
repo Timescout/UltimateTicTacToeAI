@@ -91,7 +91,7 @@ TEST(Ultimate3TStateTests, GenerateMoves_SpecificBoardWithNoFreeSpaces_Generates
 
     std::vector<move> moves = state.generateMoves();
 
-    EXPECT_EQ(moves.size(), 72); // 81 - 9 = 72
+    EXPECT_EQ(moves.size(), 72); // 81 - 9 = 72, since one board is full, there are 9 less moves than the maximum
 }
 
 TEST(Ultimate3TStateTests, GenerateMoves_AnyBoardWithOneMovePlayed_GeneratesCorrectMoves)
@@ -105,3 +105,47 @@ TEST(Ultimate3TStateTests, GenerateMoves_AnyBoardWithOneMovePlayed_GeneratesCorr
     EXPECT_EQ(moves.size(), 80);
 }
 
+// We will create a parameterized test where a sequence of moves is played, and where the result is an X win.
+class U3TUtilityTestsXWins :
+    public testing::TestWithParam<std::vector<move>>
+{};
+
+TEST_P(U3TUtilityTestsXWins, SequenceOfMoves_Results_XWin)
+{
+    std::vector<move> moves = GetParam();
+    Ultimate3TState state;
+
+    for( int i = 0; i < moves.size(); i++)
+    {
+        state.setSpacePlayed(moves[i].board, moves[i].space, player::x);
+    }
+
+    EXPECT_EQ(state.utility(), player::x);
+}
+
+INSTANTIATE_TEST_SUITE_P(Ultimate3TStateTests, U3TUtilityTestsXWins, testing::Values(
+    std::vector<move>
+    ({
+        move(activeBoard::board0, 0),
+        move(activeBoard::board0, 1),
+        move(activeBoard::board0, 2),
+        move(activeBoard::board4, 3),
+        move(activeBoard::board4, 4),
+        move(activeBoard::board4, 5),
+        move(activeBoard::board8, 6),
+        move(activeBoard::board8, 7),
+        move(activeBoard::board8, 8)
+    }),
+    std::vector<move>
+    ({
+        move(activeBoard::board2, 0),
+        move(activeBoard::board2, 3),
+        move(activeBoard::board2, 6),
+        move(activeBoard::board4, 1),
+        move(activeBoard::board4, 4),
+        move(activeBoard::board4, 7),
+        move(activeBoard::board6, 2),
+        move(activeBoard::board6, 5),
+        move(activeBoard::board6, 8)
+    })
+));

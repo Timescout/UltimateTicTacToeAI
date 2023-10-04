@@ -114,14 +114,15 @@ private:
     void init
     (
         evaluationValue eval, 
-        std::vector<std::vector<player>> board, 
+        std::vector<std::vector<player>> board,
+        std::vector<player> superBoardResults,
         move bestMove, 
         activeBoard aBoard, 
         player activePlayer
     );
 
     /// @brief Gets the result of the board.
-    /// @param board The board to check.
+    /// @param board The board number to check.
     /// @return The winner of the board, draw if it is a draw, or neither if the game is still ongoing. 
     player boardResults(std::vector<player> board);
 
