@@ -45,3 +45,11 @@ TEST(MoveTests, FromBinary_AnyBoardValue_ThrowsError)
 
     EXPECT_THROW(move m(binary), std::out_of_range);
 }
+
+///// Tests for ActiveBoard /////
+
+// Yes, This was a bug.
+TEST(ActiveBoardTests, Board8_Equals_8)
+{
+    EXPECT_EQ(activeBoard::board8, 8);
+}

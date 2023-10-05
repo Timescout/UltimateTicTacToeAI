@@ -6,9 +6,6 @@ Tests for the Ultimate3TState class.
 #include "State.h"
 #include <gtest/gtest.h>
 
-// TEST(Ultimate3TTests, ) 
-// {}
-
 TEST(Ultimate3TStateTests, SetSpacePlayed_invalidSpace_ThrowsError)
 {
     Ultimate3TState state;
@@ -16,7 +13,21 @@ TEST(Ultimate3TStateTests, SetSpacePlayed_invalidSpace_ThrowsError)
     EXPECT_THROW(state.setSpacePlayed(0, 9, player::x), std::out_of_range);
 }
 
-TEST(Ultimate3TStateTests, FetSpacePlayed_HighBorderValues_ReturnValue)
+TEST(Ultimate3TStateTests, SetSpacePlayed_HighBorderSpace_DoesNotThrowError)
+{
+    Ultimate3TState state;
+
+    EXPECT_NO_THROW(state.setSpacePlayed(8, 8, player::o));
+}
+
+TEST(Ultimate3TStateTests, SetSpacePlayed_HighBorderSpaceActiveBoard_DoesNotThrowError)
+{
+    Ultimate3TState state;
+
+    EXPECT_NO_THROW(state.setSpacePlayed(activeBoard::board8, 8, player::x));
+}
+
+TEST(Ultimate3TStateTests, GetSpacePlayed_HighBorderValues_ReturnValue)
 {
     Ultimate3TState state;
 
