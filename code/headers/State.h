@@ -19,9 +19,9 @@ enum activeBoard : uint8_t
     board3    = 0b0011,
     board4    = 0b0100,
     board5    = 0b0101,
-    board6    = 0b0111,
-    board7    = 0b1000,
-    board8    = 0b1001,
+    board6    = 0b0110,
+    board7    = 0b0111,
+    board8    = 0b1000,
     anyBoard  = 0b1111
 };
 

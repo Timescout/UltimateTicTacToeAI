@@ -257,7 +257,7 @@ const player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber)
 
 void Ultimate3TState::setSpacePlayed(int boardNumber, int spaceNumber, player whoPlayed) 
 {
-    if ((boardNumber >= TicTacToeNumberOfSpaces-1) or (spaceNumber >= TicTacToeNumberOfSpaces))
+    if ((boardNumber >= TicTacToeNumberOfSpaces) or (spaceNumber >= TicTacToeNumberOfSpaces))
     {
         throw std::out_of_range("Tried to setSpacePlayed out of board Range");
     }
