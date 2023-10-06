@@ -184,3 +184,100 @@ TEST(Ultimate3TStateTests, Utility_DoesNotUpdate_OnFirstMove)
 
     EXPECT_EQ(state.utility(), player::neither);
 }
+
+TEST(Ultimate3TStateTests, Utility_DoesNotOverride_PreviousWins)
+{
+    Ultimate3TState state;
+    // create a state where player o has won the top three subBoards.
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            state.setSpacePlayed(i, j, player::o);
+        }
+    }
+    player winner = state.utility();
+
+    // try to override the winner with new plays by x
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            state.setSpacePlayed(i, j, player::x);
+        }
+    }
+
+    EXPECT_EQ(winner, state.utility());
+}
+
+TEST(Ultimate3TStateTests, Utility_DrawConditionsOne_ReturnsDraw)
+{
+    Ultimate3TState state;
+    for(int i = 0; i < 9; i++)
+    {
+        // o x o
+        // x x o
+        // x o x
+        state.setSpacePlayed(i, 0, player::o);
+        state.setSpacePlayed(i, 1, player::x);
+        state.setSpacePlayed(i, 2, player::o);
+        state.setSpacePlayed(i, 3, player::x);
+        state.setSpacePlayed(i, 4, player::x);
+        state.setSpacePlayed(i, 5, player::o);
+        state.setSpacePlayed(i, 6, player::x);
+        state.setSpacePlayed(i, 7, player::o);
+        state.setSpacePlayed(i, 8, player::x);
+    }
+
+    player utility = state.utility();
+
+    EXPECT_EQ(utility, player::draw);
+}
+
+TEST(Ultimate3TStateTests, Utility_DrawConditionsTwo_ReturnsDraw)
+{
+    Ultimate3TState state;
+    for(int i = 0; i < 9; i++)
+    {
+        // o x o
+        // o x x
+        // x o o
+        state.setSpacePlayed(i, 0, player::o);
+        state.setSpacePlayed(i, 1, player::x);
+        state.setSpacePlayed(i, 2, player::o);
+        state.setSpacePlayed(i, 3, player::o);
+        state.setSpacePlayed(i, 4, player::x);
+        state.setSpacePlayed(i, 5, player::x);
+        state.setSpacePlayed(i, 6, player::x);
+        state.setSpacePlayed(i, 7, player::o);
+        state.setSpacePlayed(i, 8, player::o);
+    }
+
+    player utility = state.utility();
+
+    EXPECT_EQ(utility, player::draw);
+}
+
+TEST(Ultimate3TStateTests, Utility_DrawConditionsThree_ReturnsDraw)
+{
+    Ultimate3TState state;
+    for(int i = 0; i < 9; i++)
+    {
+        // x o o 
+        // o x x 
+        // o x o
+        state.setSpacePlayed(i, 0, player::x);
+        state.setSpacePlayed(i, 1, player::o);
+        state.setSpacePlayed(i, 2, player::o);
+        state.setSpacePlayed(i, 3, player::o);
+        state.setSpacePlayed(i, 4, player::x);
+        state.setSpacePlayed(i, 5, player::x);
+        state.setSpacePlayed(i, 6, player::o);
+        state.setSpacePlayed(i, 7, player::x);
+        state.setSpacePlayed(i, 8, player::o);
+    }
+
+    player utility = state.utility();
+
+    EXPECT_EQ(utility, player::draw);
+}
