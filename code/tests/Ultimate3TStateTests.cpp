@@ -117,11 +117,11 @@ TEST(Ultimate3TStateTests, GenerateMoves_AnyBoardWithOneMovePlayed_GeneratesCorr
 }
 
 // We will create a parameterized test where a sequence of moves is played, and where the result is an X win.
-class U3TUtilityTestsXWins :
+class U3TUtilityWinConditionTests :
     public testing::TestWithParam<std::vector<move>>
 {};
 
-TEST_P(U3TUtilityTestsXWins, SequenceOfMoves_Results_XWin)
+TEST_P(U3TUtilityWinConditionTests, SequenceOfMoves_Results_XWin)
 {
     std::vector<move> moves = GetParam();
     Ultimate3TState state;
@@ -134,7 +134,20 @@ TEST_P(U3TUtilityTestsXWins, SequenceOfMoves_Results_XWin)
     EXPECT_EQ(state.utility(), player::x);
 }
 
-INSTANTIATE_TEST_SUITE_P(Ultimate3TStateTests, U3TUtilityTestsXWins, testing::Values(
+TEST_P(U3TUtilityWinConditionTests, SequenceOfMoves_Results_OWin)
+{
+    std::vector<move> moves = GetParam();
+    Ultimate3TState state;
+
+    for (int i = 0; i < moves.size(); i++)
+    {
+        state.setSpacePlayed(moves[i].board, moves[i].space, player::o);
+    }
+
+    EXPECT_EQ(state.utility(), player::o);
+}
+
+INSTANTIATE_TEST_SUITE_P(Ultimate3TStateTests, U3TUtilityWinConditionTests, testing::Values(
     std::vector<move>
     ({
         move(activeBoard::board0, 0),
@@ -160,3 +173,14 @@ INSTANTIATE_TEST_SUITE_P(Ultimate3TStateTests, U3TUtilityTestsXWins, testing::Va
         move(activeBoard::board6, 8)
     })
 ));
+
+TEST(Ultimate3TStateTests, Utility_DoesNotUpdate_OnFirstMove)
+{
+    Ultimate3TState state;
+
+    state.setSpacePlayed(0, 0, player::x);
+    state.setSpacePlayed(1, 0, player::x);
+    state.setSpacePlayed(2, 0, player::x);
+
+    EXPECT_EQ(state.utility(), player::neither);
+}
