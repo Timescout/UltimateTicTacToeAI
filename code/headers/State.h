@@ -94,14 +94,14 @@ private:
     /// @brief The evaluation of this position. -1 is a win for player O, 1 is a win for player X, and 0 is a draw.
     evaluationValue evaluation_;
 
+    /// @brief The evaluated best move in this state.
+    move bestMove_;
+
     /// @brief The board associated with this state. Keeps track of which player has played in a space.
     std::vector<std::vector<player>> board_;
 
     /// @brief Stores the ongoing state of who has won subgames. 
     std::vector<player> superBoardResults_;
-
-    /// @brief The evaluated best move in this state.
-    move bestMove_;
 
     /// @brief The active board which can be played on this turn.
     /// @note -1 means that any board may be played on, and may be a result of the game just starting.
