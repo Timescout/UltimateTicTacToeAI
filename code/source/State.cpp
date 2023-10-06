@@ -149,32 +149,23 @@ void Ultimate3TState::init
 player Ultimate3TState::boardResults(std::vector<player> board) 
 {
     // check each possible win combination for x and o
-    if (
-        // horizontal triplets
-        (board[0] == player::x and board[1] == player::x and board[2] == player::x) or
-        (board[3] == player::x and board[4] == player::x and board[5] == player::x) or
-        (board[6] == player::x and board[7] == player::x and board[8] == player::x) or
-        // vertical triplets
-        (board[0] == player::x and board[3] == player::x and board[6] == player::x) or
-        (board[1] == player::x and board[4] == player::x and board[7] == player::x) or
-        (board[2] == player::x and board[5] == player::x and board[8] == player::x) or
-        // diagonals
-        (board[0] == player::x and board[4] == player::x and board[8] == player::x) or
-        (board[2] == player::x and board[4] == player::x and board[6] == player::x)
-    ) { return player::x; }
-    if (
-        // horizontal triplets
-        (board[0] == player::o and board[1] == player::o and board[2] == player::o) or
-        (board[3] == player::o and board[4] == player::o and board[5] == player::o) or
-        (board[6] == player::o and board[7] == player::o and board[8] == player::o) or
-        // vertical triplets
-        (board[0] == player::o and board[3] == player::o and board[6] == player::o) or
-        (board[1] == player::o and board[4] == player::o and board[7] == player::o) or
-        (board[2] == player::o and board[5] == player::o and board[8] == player::o) or
-        // diagonals
-        (board[0] == player::o and board[4] == player::o and board[8] == player::o) or
-        (board[2] == player::o and board[4] == player::o and board[6] == player::o)
-    ) { return player::o; }
+    for( int check = player::x, i = 0; i < 2; check = player::o)
+    {
+        if (
+            // horizontal triplets
+            (board[0] == check and board[1] == check and board[2] == check) or
+            (board[3] == check and board[4] == check and board[5] == check) or
+            (board[6] == check and board[7] == check and board[8] == check) or
+            // vertical triplets
+            (board[0] == check and board[3] == check and board[6] == check) or
+            (board[1] == check and board[4] == check and board[7] == check) or
+            (board[2] == check and board[5] == check and board[8] == check) or
+            // diagonals
+            (board[0] == check and board[4] == check and board[8] == check) or
+            (board[2] == check and board[4] == check and board[6] == check)
+        ) { return player(check); }
+        i++;
+    }
     // if noone has won, is the game still going?
     for (int i = 0; i < 8; i++)
     {
