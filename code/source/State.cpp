@@ -149,7 +149,7 @@ void Ultimate3TState::init
 player Ultimate3TState::boardResults(std::vector<player> board) 
 {
     // check each possible win combination for x and o
-    for( int check = player::x, i = 0; i < 2; check = player::o)
+    for( int check = player::x, i = 0; i < 2; check = player::o, i++)
     {
         if (
             // horizontal triplets
@@ -164,7 +164,6 @@ player Ultimate3TState::boardResults(std::vector<player> board)
             (board[0] == check and board[4] == check and board[8] == check) or
             (board[2] == check and board[4] == check and board[6] == check)
         ) { return player(check); }
-        i++;
     }
     // if noone has won, is the game still going?
     for (int i = 0; i < 8; i++)
