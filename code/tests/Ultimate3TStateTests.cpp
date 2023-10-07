@@ -281,3 +281,19 @@ TEST(Ultimate3TStateTests, Utility_DrawConditionsThree_ReturnsDraw)
 
     EXPECT_EQ(utility, player::draw);
 }
+
+TEST(Ultimate3TStateTests, SetBoard_BoardTooBig_ThrowsError)
+{
+    std::vector<std::vector<player>> tooBigBoard(10, std::vector<player>(9, player::neither));
+    Ultimate3TState state;
+
+    EXPECT_THROW(state.setBoard(tooBigBoard), std::invalid_argument);
+}
+
+TEST(Ultimate3TStateTests, SetBoard_SubBoardTooBig_ThrowsError)
+{
+    std::vector<std::vector<player>> tooBigBoard(9, std::vector<player>(10, player::neither));
+    Ultimate3TState state;
+
+    EXPECT_THROW(state.setBoard(tooBigBoard), std::invalid_argument);
+}
