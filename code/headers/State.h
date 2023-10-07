@@ -138,6 +138,7 @@ public:
 
     /// @brief Creates a state from a given hex value.
     /// @param binaryEncoding A binary encoding of the State which is transformed into a State object. 
+    // warning, not yet implemented.
     Ultimate3TState(std::vector<uint64_t> binaryEncoding);
 
     /// @brief Copy constructor.
@@ -186,5 +187,10 @@ public:
     /// @param checkBoard A vector of player enums that holds info about which players have played in which spaces
     /// @return The result of the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
     player utility();
+
+    /// @brief Transforms this state into a binary string.
+    /// @return A binary version of this State.
+    // Warning, not yet implemented.
+    std::vector<u_int64_t> const toBinary();
 
 };
