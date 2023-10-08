@@ -297,3 +297,19 @@ TEST(Ultimate3TStateTests, SetBoard_SubBoardTooBig_ThrowsError)
 
     EXPECT_THROW(state.setBoard(tooBigBoard), std::invalid_argument);
 }
+
+TEST(Ultimate3TStateTests, GenerateSuccessor_LegalMoveXToPlayNoFullSubBoard_GeneratesSuccessorCorrectly)
+{
+    Ultimate3TState state;
+    state.setActivePlayer(player::x);
+    state.setSpacePlayed(activeBoard::board4, 4, player::neither);
+    state.setSpacePlayed(activeBoard::board4, 5, player::neither); // need to make sure that subboard 4 is not full after this move.
+    state.setActiveBoard(activeBoard::anyBoard);
+    move action(activeBoard::board4, 4);
+
+    Ultimate3TState successorState = state.generateSuccessorState(action);
+
+    EXPECT_EQ(successorState.getActiveBoard(), activeBoard::board4);
+    EXPECT_EQ(successorState.getActivePlayer(), player::o);
+    EXPECT_EQ(successorState.getSpacePlayed(activeBoard::board4, 4), player::x);
+}
