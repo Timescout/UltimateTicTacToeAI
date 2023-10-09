@@ -48,7 +48,7 @@ public:
 
     /// @brief Argumented constructor
     /// @param moveBoard The board of this move, Note this cannot be activeBoard::anyBoard which will throw an error if passed.
-    /// @param moveSpace The space of this move, must be between 0 and 8 inclusive.
+    /// @param moveSpace The space of this move, must be between 0 and 8 inclusive. Throws an error if outside this range.
     move(activeBoard moveBoard, uint8_t moveSpace);
 
     /// @brief Construct a move from binary.
