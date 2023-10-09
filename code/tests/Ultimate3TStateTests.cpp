@@ -313,3 +313,64 @@ TEST(Ultimate3TStateTests, GenerateSuccessor_LegalMoveXToPlayNoFullSubBoard_Gene
     EXPECT_EQ(successorState.getActivePlayer(), player::o);
     EXPECT_EQ(successorState.getSpacePlayed(activeBoard::board4, 4), player::x);
 }
+
+TEST(Ultimate3TStateTests, GenerateSuccessor_LegalMoveXtoPlayFullSubBoard_GeneratesSuccessorCorrectly)
+{
+    Ultimate3TState state;
+    state.setActivePlayer(player::x);
+    move action(board8, 8);
+    state.setActiveBoard(action.board);
+    for(int i = 0; i < 8; i++)
+    {
+        state.setSpacePlayed(action.board, i, player::o);
+    }
+
+    Ultimate3TState successorState = state.generateSuccessorState(action);
+
+    EXPECT_EQ(successorState.getActiveBoard(), anyBoard);
+    EXPECT_EQ(successorState.getActivePlayer(), player::o);
+    EXPECT_EQ(successorState.getSpacePlayed(action.board, action.space), player::x);
+}
+
+TEST(Ultimate3TStateTests, GenerateSuccessor_LegalMoveOToPlayNotFullSubBoard_GeneratesSuccessorCorrectly)
+{
+    Ultimate3TState state;
+    state.setActivePlayer(player::o);
+    move action(board0, 0);
+    state.setActiveBoard(action.board);
+
+    Ultimate3TState successorState = state.generateSuccessorState(action);
+
+    EXPECT_EQ(successorState.getActiveBoard(), board0);
+    EXPECT_EQ(successorState.getActivePlayer(), player::x);
+    EXPECT_EQ(successorState.getSpacePlayed(action.board, action.space), player::o);
+}
+
+TEST(Ultimate3TStateTests, GenerateSuccessor_IllegalMoveNonplayableBoardAndFullSpot_ThrowsError)
+{
+    Ultimate3TState state;
+    state.setActiveBoard(board1);
+    move action(board0, 8);
+    state.setSpacePlayed(action.board, action.space, player::o);
+
+    EXPECT_THROW(state.generateSuccessorState(action), std::invalid_argument);
+}
+
+TEST(Ultimate3TStateTests, GenerateSuccessor_IllegalMoveNonplayableBoard_ThrowsError)
+{
+    Ultimate3TState state;
+    state.setActiveBoard(board1);
+    move action(board0, 8);
+
+    EXPECT_THROW(state.generateSuccessorState(action), std::invalid_argument);
+}
+
+TEST(Ultimate3TStateTests, GenerateSuccessor_IllegalMoveFullSpot_ThrowsError)
+{
+    Ultimate3TState state;
+    move action(board0, 8);
+    state.setActiveBoard(anyBoard);
+    state.setSpacePlayed(action.board, action.space, player::o);
+
+    EXPECT_THROW(state.generateSuccessorState(action), std::invalid_argument);
+}
