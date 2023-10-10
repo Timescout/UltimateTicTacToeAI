@@ -308,7 +308,7 @@ Ultimate3TState Ultimate3TState::generateSuccessorState(move playedMove)
         playedMove.board, playedMove.space, // where the move is to be played
         getActivePlayer() // who is playing the move
     );
-    successor.setActivePlayer(successor.getActivePlayer() == player::x ? player::o : player::x); // make it the other player's turn.
+    successor.setActivePlayer(getActivePlayer() == player::x ? player::o : player::x); // make it the other player's turn.
     // determine if the next board to be played on is full. if it is, then any board can be played on. If not, the board corresponding to the space of the played move must be played on.
     successor.setActiveBoard(activeBoard::anyBoard);
     for (int space = 0; space < 8; space++)
