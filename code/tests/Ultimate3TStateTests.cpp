@@ -374,3 +374,46 @@ TEST(Ultimate3TStateTests, GenerateSuccessor_IllegalMoveFullSpot_ThrowsError)
 
     EXPECT_THROW(state.generateSuccessorState(action), std::invalid_argument);
 }
+
+TEST(Ultimate3TStateTests, IsTerminal_XWins_ReturnsTrue)
+{
+    Ultimate3TState state;
+
+    for (int i = 0; i < 9; i++)
+    {
+        state.setSpacePlayed(i/3, i % 3, player::x);
+    }
+
+    EXPECT_TRUE(state.isTerminalState());
+}
+
+TEST(Ultimate3TStateTests, IsTerminal_OWins_ReturnsTrue)
+{
+    Ultimate3TState state;
+
+    for (int i = 0; i < 9; i++)
+    {
+        state.setSpacePlayed(i/3, i % 3, player::o);
+    }
+
+    EXPECT_TRUE(state.isTerminalState());
+}
+
+TEST(Ultimate3TStateTests, IsTerminal_Draw_ReturnsTrue)
+{
+    Ultimate3TState state;
+
+    for(int i = 0; i < 81; i++)
+    {
+        state.setSpacePlayed(i/9, i % 9, player::draw);
+    }
+
+    EXPECT_TRUE(state.isTerminalState());
+}
+
+TEST(Ultimate3TStateTests, IsTerminal_OngoingGame_ReturnsFalse)
+{
+    Ultimate3TState state;
+
+    EXPECT_FALSE(state.isTerminalState());
+}
