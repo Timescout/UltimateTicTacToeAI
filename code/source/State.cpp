@@ -194,7 +194,7 @@ Ultimate3TState::Ultimate3TState()
 
 Ultimate3TState::~Ultimate3TState() {}
 
-Ultimate3TState::Ultimate3TState(std::vector<uint64_t> binaryEncoding) {}
+Ultimate3TState::Ultimate3TState(std::bitset<ENCODINGSIZE> binaryEncoding) {}
 
 Ultimate3TState::Ultimate3TState(Ultimate3TState& source)
 {
@@ -325,4 +325,43 @@ bool Ultimate3TState::isTerminalState()
 {
     // if the game is still going, utility will return player::neither. otherwise the game has ended somehow.
     return utility() != player::neither;
+}
+
+void numberBinaryInsertion(int number, int size, std::bitset<ENCODINGSIZE> binary)
+{
+    // allocate new space for the number
+    binary <<= size;
+    // turn the number into binary
+    std::bitset<ENCODINGSIZE> temp(number);
+    // read the new binary into the binary string.
+    for (int i = 0; i < size; i++)
+    {
+        binary.set(i, temp[i]);
+    }
+}
+
+const std::bitset<ENCODINGSIZE> Ultimate3TState::toBinary()
+{
+    std::bitset<ENCODINGSIZE> binary;
+
+    // iterate over the board and encode it into binary.
+    for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
+    {
+        for (int j = 0; j < TicTacToeNumberOfSpaces; j++)
+        {
+            numberBinaryInsertion(board_[i][j], 2, binary);
+        }
+    }
+
+    for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
+    {
+        numberBinaryInsertion(superBoardResults_[i], 2, binary);
+    }
+        
+    numberBinaryInsertion(activeBoard_, 4, binary);
+    numberBinaryInsertion(activePlayer_, 2, binary);
+    numberBinaryInsertion(evaluation_.playerToWin, 2, binary);
+    numberBinaryInsertion(bestMove_.toBinary(), 8, binary);
+    
+    return binary;
 }

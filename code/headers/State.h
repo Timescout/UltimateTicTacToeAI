@@ -5,10 +5,17 @@ Author: Andrew Bergman
 
 This file defines a game state for ultimate tic tac toe and it's encoding to a file.
 
+Including:
+    active board enum
+    player enum
+    move struct
+    evaluationValue struct
+    Ultimate3TState class
 */
 #include <stdint.h>
 #include <vector>
 #include <stdexcept>
+#include <bitset>
 
 // Defines encoding for which board is active. 
 enum activeBoard : uint8_t
@@ -29,10 +36,10 @@ enum activeBoard : uint8_t
 /// @brief Represents a player. Context gives this more meaning, it could mean that this player is winning or that it is this player's turn
 enum player : uint8_t
 {
-    x,
-    o,
-    draw,
-    neither
+    x = 0b11,
+    o = 0b10,
+    draw = 0b01,
+    neither = 0b00
 };
 
 struct move
@@ -84,6 +91,9 @@ public:
     const bool operator<=(const evaluationValue& other);
 };
 
+// A number used to define the size needed to encode an Ultimate3TState into Binary.
+#define ENCODINGSIZE 196
+
 /// @brief A game state for ultimate tic tac toe. 
 class Ultimate3TState
 {
@@ -126,6 +136,12 @@ private:
     /// @return The winner of the board, draw if it is a draw, or neither if the game is still ongoing. 
     const player boardResults(std::vector<player> board);
 
+    /// @brief Used for encoding a number into a binary string. The number will be appended to the beggining of the bitset
+    /// @param number The number to be encoded
+    /// @param size the number will take in the binary string
+    /// @param binary The binary string, the number will be appended to the end.
+    void numberBinaryInsertion(int number, int size,std::bitset<ENCODINGSIZE> binary);
+
 public:
 
     ///// Constructors and destructor /////
@@ -139,7 +155,7 @@ public:
     /// @brief Creates a state from a given hex value.
     /// @param binaryEncoding A binary encoding of the State which is transformed into a State object. 
     // warning, not yet implemented.
-    Ultimate3TState(std::vector<uint64_t> binaryEncoding);
+    Ultimate3TState(std::bitset<ENCODINGSIZE>);
 
     /// @brief Copy constructor.
     Ultimate3TState(Ultimate3TState& source);
@@ -191,6 +207,6 @@ public:
     /// @brief Transforms this state into a binary string.
     /// @return A binary version of this State.
     // Warning, not yet implemented.
-    const std::vector<u_int64_t> toBinary();
+    const std::bitset<ENCODINGSIZE> toBinary();
 
 };
