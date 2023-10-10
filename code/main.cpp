@@ -1,19 +1,21 @@
 #include <iostream>
+#include <bitset>
+#include <fstream>
 #include "State.h"
 
 int main()
 {
     std::cout << "hello World\n";
+
+    std::bitset<196> encoding(1);
+    encoding <<= 2;
+
+
+
+
+    std::fstream file("brain.txt");
+    if(!file.is_open()) { std::cerr << "file failed to open\n"; throw; }
+    file << encoding;
+    file.close();
     return 0;
 }
-
-
-// #include <gtest/gtest.h>
-
-// #include "evaluationValueTests.h"
-
-// int main(int argc, char** argv)
-// {
-//     testing::InitGoogleTest(&argc, argv);
-//     return RUN_ALL_TESTS();
-// }
