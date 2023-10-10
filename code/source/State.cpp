@@ -28,7 +28,7 @@ move::move(uint8_t binary)
     init(activeBoard(binary >> 4), binary & 0b1111);
 }
 
-uint8_t move::toBinary() 
+const uint8_t move::toBinary() 
 {
     return (board << 4) + space;
 }
@@ -51,17 +51,17 @@ evaluationValue::evaluationValue(player toWin, int depthToWin)
     init(toWin, depthToWin);
 }
 
-bool const evaluationValue::operator==(const evaluationValue& other)
+const bool evaluationValue::operator==(const evaluationValue& other)
 {
     return playerToWin == other.playerToWin && depth == other.depth;
 }
 
-bool const evaluationValue::operator!=(const evaluationValue& other)
+const bool evaluationValue::operator!=(const evaluationValue& other)
 {
     return !(*this == other);
 }
 
-bool const evaluationValue::operator>(const evaluationValue& other)
+const bool evaluationValue::operator>(const evaluationValue& other)
 {
     int value, othersValue;
     // check that Depth is within acceptable range, 0 to 81 inclusive.
@@ -111,17 +111,17 @@ bool const evaluationValue::operator>(const evaluationValue& other)
     return value > othersValue;
 }
 
-bool const evaluationValue::operator>=(const evaluationValue& other)
+const bool evaluationValue::operator>=(const evaluationValue& other)
 {
     return *this > other || *this == other;
 }
 
-bool const evaluationValue::operator<(const evaluationValue& other)
+const bool evaluationValue::operator<(const evaluationValue& other)
 {
     return !(*this >= other);
 }
 
-bool const evaluationValue::operator<=(const evaluationValue& other)
+const bool evaluationValue::operator<=(const evaluationValue& other)
 {
     return !(*this > other);
 }
@@ -146,7 +146,7 @@ void Ultimate3TState::init
     activePlayer_ = activePlayer;
 }
 
-player Ultimate3TState::boardResults(std::vector<player> board) 
+const player Ultimate3TState::boardResults(std::vector<player> board) 
 {
     // check each possible win combination for x and o
     for( int check = player::x, i = 0; i < 2; check = player::o, i++)

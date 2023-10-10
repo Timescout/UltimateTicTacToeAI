@@ -57,7 +57,7 @@ public:
 
     /// @brief Convert this move to a binary representation
     /// @return A binary representation of this move.
-    uint8_t toBinary();
+    const uint8_t toBinary();
 };
 
 /// @brief In order to ensure more intelligent behavior, our evaluation must include more information than just the game's value.
@@ -76,12 +76,12 @@ public:
     evaluationValue(player toWin, int depthToWin);
 
     ///// Comparison methods /////
-    bool const operator==(const evaluationValue& other);
-    bool const operator!=(const evaluationValue& other);
-    bool const operator>(const evaluationValue& other);
-    bool const operator>=(const evaluationValue& other);
-    bool const operator<(const evaluationValue& other);
-    bool const operator<=(const evaluationValue& other);
+    const bool operator==(const evaluationValue& other);
+    const bool operator!=(const evaluationValue& other);
+    const bool operator>(const evaluationValue& other);
+    const bool operator>=(const evaluationValue& other);
+    const bool operator<(const evaluationValue& other);
+    const bool operator<=(const evaluationValue& other);
 };
 
 /// @brief A game state for ultimate tic tac toe. 
@@ -124,7 +124,7 @@ private:
     /// @brief Gets the result of the board.
     /// @param board The board number to check.
     /// @return The winner of the board, draw if it is a draw, or neither if the game is still ongoing. 
-    player boardResults(std::vector<player> board);
+    const player boardResults(std::vector<player> board);
 
 public:
 
@@ -191,6 +191,6 @@ public:
     /// @brief Transforms this state into a binary string.
     /// @return A binary version of this State.
     // Warning, not yet implemented.
-    std::vector<u_int64_t> const toBinary();
+    const std::vector<u_int64_t> toBinary();
 
 };
