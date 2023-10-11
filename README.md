@@ -10,6 +10,7 @@ Each game state is encoded into binary and saved in a table. This allows for any
 3. the evaluation of the state
 4. the best move
 5. the spaces that have already been played in (where the X's and O's are)
+6. Which boards have been won and by whome. 
 
 Who is to play requires only 1 bit, and will be encoded as 
 | Value |   State   |
@@ -66,10 +67,13 @@ The best move has two parts, which active board is to be played on and which spa
 | 0111  | 7  |
 | 1000  | 8  |
 
-With encoding the location of the X's and O's there are three states a space can be in. It can be empty, an X, and an O. Thus we need two bits to encode all of the information. The scheme will be as such: one bit will encode whether the space is empty or not, and the other will encode which player has played in that space.
+With encoding the location of the X's and O's there are three states a space can be in. It can be empty, an X, and an O. Thus we need two bits to encode all of the information. This encoding will be used for each board, as well as for who has won each board. Because this is also used for results, draw is included.
 
 | Value |  State  |
 |-------| --------|
 | 00    | Space is empty    | 
 | 11    | X Played in the space  |
 | 10    | O Played in the space  |
+| 01    | Draw |
+
+The boards will be encoded starting in the top left space and continuing to the right, from top to bottom. The least significant bit of the encoding will be the lower right space. The whole board will use the same scheme, where the top left board is encoded which continues right top to bottom.

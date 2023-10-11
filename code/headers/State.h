@@ -20,28 +20,29 @@ Including:
 // Defines encoding for which board is active. 
 enum activeBoard : uint8_t
 {
-    board0    = 0b0000,
-    board1    = 0b0001,
-    board2    = 0b0010,
-    board3    = 0b0011,
-    board4    = 0b0100,
-    board5    = 0b0101,
-    board6    = 0b0110,
-    board7    = 0b0111,
-    board8    = 0b1000,
-    anyBoard  = 0b1111
+    board0   = 0b0000,
+    board1   = 0b0001,
+    board2   = 0b0010,
+    board3   = 0b0011,
+    board4   = 0b0100,
+    board5   = 0b0101,
+    board6   = 0b0110,
+    board7   = 0b0111,
+    board8   = 0b1000,
+    anyBoard = 0b1111
 };
 
 // a move in this game has two parts the board and space, which each range from 0 to 8 inclusive.
 /// @brief Represents a player. Context gives this more meaning, it could mean that this player is winning or that it is this player's turn
 enum player : uint8_t
 {
-    x = 0b11,
-    o = 0b10,
-    draw = 0b01,
+    x       = 0b11,
+    o       = 0b10,
+    draw    = 0b01,
     neither = 0b00
 };
 
+/// @brief Object that holds information about a move. 
 struct move
 {
 private:
@@ -67,7 +68,7 @@ public:
     const uint8_t toBinary();
 };
 
-/// @brief In order to ensure more intelligent behavior, our evaluation must include more information than just the game's value.
+/// @brief In order to ensure more intelligent behavior, our evaluation must include more information than just the game's value. The depth is also stored and attached to the value of the game. A greater depth is always worse than a lesser depth.
 struct evaluationValue
 {
 private:
@@ -83,6 +84,7 @@ public:
     evaluationValue(player toWin, int depthToWin);
 
     ///// Comparison methods /////
+    // Used in the minimax algorithm to compare moves.
     const bool operator==(const evaluationValue& other);
     const bool operator!=(const evaluationValue& other);
     const bool operator>(const evaluationValue& other);
@@ -181,7 +183,7 @@ public:
     /// @brief Sets a space state, as if a player played their during their turn. Throws an error if the indecies are outside of the possible board values.
     /// @param boardNumber The board to play on.
     /// @param spaceNumber The space to play on.
-    /// @param whoPlayed Which player plays this move.
+    /// @param whoPlayed Which player plays this move. This can be any player enum, including niether and draw.
     void setSpacePlayed(int boardNumber, int spaceNumber, player whoPlayed);
 
     ///// Functions /////
@@ -208,5 +210,4 @@ public:
     /// @return A binary version of this State.
     // Warning, not yet implemented.
     const std::bitset<ENCODINGSIZE> toBinary();
-
 };
