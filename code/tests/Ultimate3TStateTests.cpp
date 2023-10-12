@@ -417,3 +417,70 @@ TEST(Ultimate3TStateTests, IsTerminal_OngoingGame_ReturnsFalse)
 
     EXPECT_FALSE(state.isTerminalState());
 }
+
+TEST(Ultimate3TStateTests, ToBinary_CreatsCorrectBinary)
+{
+    Ultimate3TState state;
+    state.setEvaluation(evaluationValue(player::o, 0));
+    state.setBestMove(move(board6, 6));
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            state.setSpacePlayed(i, j, player::o);
+        }
+    }
+    state.setActiveBoard(board6);
+    state.setActivePlayer(player::o);
+    std::bitset<ENCODINGSIZE> expectedEncoding;
+    expectedEncoding.set(1);
+    expectedEncoding.set(2);
+    expectedEncoding.set(5);
+    expectedEncoding.set(6);
+    expectedEncoding.set(9);
+    expectedEncoding.set(11);
+    expectedEncoding.set(13);
+    expectedEncoding.set(14);
+    for (int i = 17; i <= ENCODINGSIZE; i+=2)
+    {
+        expectedEncoding.set(i);
+    }
+    
+    std::bitset<ENCODINGSIZE> encoding = state.toBinary();
+
+    EXPECT_EQ(encoding, expectedEncoding);
+}
+
+TEST(Ultimate3TStateTests, BinaryConstructor_CreatesCorrectObject)
+{
+    std::bitset<ENCODINGSIZE> encoding;
+    encoding.set(1);
+    encoding.set(2);
+    encoding.set(5);
+    encoding.set(6);
+    encoding.set(9);
+    encoding.set(11);
+    encoding.set(13);
+    encoding.set(14);
+    for (int i = 17; i <= ENCODINGSIZE; i+=2)
+    {
+        encoding.set(i);
+    }
+
+    Ultimate3TState state(encoding);
+
+    EXPECT_EQ(state.getBestMove().board, board6);
+    EXPECT_EQ(state.getBestMove().space, 6);
+    EXPECT_EQ(state.getEvaluation(), evaluationValue(player::o, 0));
+    EXPECT_EQ(state.getActivePlayer(), player::o);
+    EXPECT_EQ(state.getActiveBoard(), board6);
+    std::vector<std::vector<player>> board = state.getBoard();
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            EXPECT_EQ(board[i][j], player::o);
+        }
+    }
+    EXPECT_EQ(state.utility(), player::o);
+}
