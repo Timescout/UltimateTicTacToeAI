@@ -65,7 +65,7 @@ public:
 
     /// @brief Convert this move to a binary representation
     /// @return A binary representation of this move.
-    const uint8_t toBinary();
+    uint8_t toBinary() const;
 };
 
 /// @brief In order to ensure more intelligent behavior, our evaluation must include more information than just the game's value. The depth is also stored and attached to the value of the game. A greater depth is always worse than a lesser depth.
@@ -85,12 +85,12 @@ public:
 
     ///// Comparison methods /////
     // Used in the minimax algorithm to compare moves.
-    const bool operator==(const evaluationValue& other);
-    const bool operator!=(const evaluationValue& other);
-    const bool operator>(const evaluationValue& other);
-    const bool operator>=(const evaluationValue& other);
-    const bool operator<(const evaluationValue& other);
-    const bool operator<=(const evaluationValue& other);
+    bool operator==(const evaluationValue& other) const;
+    bool operator!=(const evaluationValue& other) const;
+    bool operator>(const evaluationValue& other) const;
+    bool operator>=(const evaluationValue& other) const;
+    bool operator<(const evaluationValue& other) const;
+    bool operator<=(const evaluationValue& other) const;
 };
 
 // A number used to define the size needed to encode an Ultimate3TState into Binary.
@@ -136,13 +136,20 @@ private:
     /// @brief Gets the result of the board.
     /// @param board The board number to check.
     /// @return The winner of the board, draw if it is a draw, or neither if the game is still ongoing. 
-    const player boardResults(std::vector<player> board);
+    player boardResults(std::vector<player> board) const;
 
     /// @brief Used for encoding a number into a binary string. The number will be appended to the beggining of the bitset
     /// @param number The number to be encoded
     /// @param size the number will take in the binary string
     /// @param binary The binary string, the number will be appended to the end.
-    void numberBinaryInsertion(int number, int size,std::bitset<ENCODINGSIZE> binary);
+    void numberBinaryInsertion(int number, int size, std::bitset<ENCODINGSIZE>& binary) const;
+
+    /// @brief Used to extract numbers from a bitset.
+    /// @param start Where to start reading.
+    /// @param end Where to end(exclusive) reading.
+    /// @param binary The bitset to extract from.
+    /// @return The number extracted.
+    int numberBinaryExtraction(int start, int end, std::bitset<ENCODINGSIZE>& binary) const;
 
 public:
 
@@ -164,22 +171,22 @@ public:
 
     ///// Get and set /////
 
-    const evaluationValue getEvaluation();
+    evaluationValue getEvaluation() const;
     void setEvaluation(evaluationValue newEvaluation);
 
-    const std::vector<std::vector<player>> getBoard();
+    std::vector<std::vector<player>> getBoard() const;
     void setBoard(std::vector<std::vector<player>> newBoard);
 
-    const move getBestMove();
+    move getBestMove() const;
     void setBestMove(move newBestMove);
 
-    const activeBoard getActiveBoard();
+    activeBoard getActiveBoard() const;
     void setActiveBoard(activeBoard newActiveBoard);
 
-    const player getActivePlayer();
+    player getActivePlayer() const;
     void setActivePlayer(player newActivePlayer);
 
-    const player getSpacePlayed(int boardNumber, int spaceNumber);
+    player getSpacePlayed(int boardNumber, int spaceNumber) const;
     /// @brief Sets a space state, as if a player played their during their turn. Throws an error if the indecies are outside of the possible board values.
     /// @param boardNumber The board to play on.
     /// @param spaceNumber The space to play on.
@@ -206,8 +213,9 @@ public:
     /// @return The result of the game. Can be x, o, a draw, or niether. If neither, the game is still being played.
     player utility();
 
-    /// @brief Transforms this state into a binary string.
+    /// @brief Transforms this state into a binary string. 
     /// @return A binary version of this State.
     // Warning, not yet implemented.
-    const std::bitset<ENCODINGSIZE> toBinary();
+    /// @warning The depth value of the evaluation_ is not saved and so this function is lossy.
+    std::bitset<ENCODINGSIZE> toBinary() const;
 };

@@ -1,5 +1,6 @@
 #include "State.h"
 #include <stdexcept>
+#include <math.h>
 
 ///// move struct definitions /////
 
@@ -28,7 +29,7 @@ move::move(uint8_t binary)
     init(activeBoard(binary >> 4), binary & 0b1111);
 }
 
-const uint8_t move::toBinary() 
+uint8_t move::toBinary() const
 {
     return (board << 4) + space;
 }
@@ -51,17 +52,17 @@ evaluationValue::evaluationValue(player toWin, int depthToWin)
     init(toWin, depthToWin);
 }
 
-const bool evaluationValue::operator==(const evaluationValue& other)
+bool evaluationValue::operator==(const evaluationValue& other) const
 {
     return playerToWin == other.playerToWin && depth == other.depth;
 }
 
-const bool evaluationValue::operator!=(const evaluationValue& other)
+bool evaluationValue::operator!=(const evaluationValue& other) const
 {
     return !(*this == other);
 }
 
-const bool evaluationValue::operator>(const evaluationValue& other)
+bool evaluationValue::operator>(const evaluationValue& other) const
 {
     int value, othersValue;
     // check that Depth is within acceptable range, 0 to 81 inclusive.
@@ -111,17 +112,17 @@ const bool evaluationValue::operator>(const evaluationValue& other)
     return value > othersValue;
 }
 
-const bool evaluationValue::operator>=(const evaluationValue& other)
+bool evaluationValue::operator>=(const evaluationValue& other) const
 {
     return *this > other || *this == other;
 }
 
-const bool evaluationValue::operator<(const evaluationValue& other)
+bool evaluationValue::operator<(const evaluationValue& other) const
 {
     return !(*this >= other);
 }
 
-const bool evaluationValue::operator<=(const evaluationValue& other)
+bool evaluationValue::operator<=(const evaluationValue& other) const
 {
     return !(*this > other);
 }
@@ -146,7 +147,7 @@ void Ultimate3TState::init
     activePlayer_ = activePlayer;
 }
 
-const player Ultimate3TState::boardResults(std::vector<player> board) 
+player Ultimate3TState::boardResults(std::vector<player> board) const
 {
     // check each possible win combination for x and o
     for( int check = player::x, i = 0; i < 2; check = player::o, i++)
@@ -194,7 +195,26 @@ Ultimate3TState::Ultimate3TState()
 
 Ultimate3TState::~Ultimate3TState() {}
 
-Ultimate3TState::Ultimate3TState(std::bitset<ENCODINGSIZE> binaryEncoding) {}
+Ultimate3TState::Ultimate3TState(std::bitset<ENCODINGSIZE> binaryEncoding) 
+{
+    bestMove_ = move(numberBinaryExtraction(0, 8, binaryEncoding));
+    evaluation_ = evaluationValue(player(numberBinaryExtraction(8, 10, binaryEncoding)), 0);
+    activePlayer_ = player(numberBinaryExtraction(10, 12, binaryEncoding));
+    activeBoard_ = activeBoard(numberBinaryExtraction(12, 16, binaryEncoding));
+    superBoardResults_ = std::vector<player>(TicTacToeNumberOfSpaces, player::neither);
+    for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
+    {
+        superBoardResults_[i] = player(numberBinaryExtraction(16+i*2, 18+i*2, binaryEncoding));
+    }
+    board_ = std::vector<std::vector<player>>(TicTacToeNumberOfSpaces, std::vector<player>(TicTacToeNumberOfSpaces, player::neither));
+    for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
+    {
+        for (int j = 0; j < TicTacToeNumberOfSpaces; j++)
+        {
+            board_[i][j] = player(numberBinaryExtraction(36 + (i + j) * 2, 38 + (i + j) * 2, binaryEncoding));
+        }
+    }
+}
 
 Ultimate3TState::Ultimate3TState(Ultimate3TState& source)
 {
@@ -209,11 +229,11 @@ Ultimate3TState::Ultimate3TState(Ultimate3TState& source)
     );
 }
 
-const evaluationValue Ultimate3TState::getEvaluation() { return evaluation_; }
+evaluationValue Ultimate3TState::getEvaluation() const { return evaluation_; }
 
 void Ultimate3TState::setEvaluation(evaluationValue newEvaluation) { evaluation_ = newEvaluation; }
 
-const std::vector<std::vector<player>> Ultimate3TState::getBoard() { return board_; }
+std::vector<std::vector<player>> Ultimate3TState::getBoard() const { return board_; }
 
 void Ultimate3TState::setBoard(std::vector<std::vector<player>> newBoard) {
     if ((newBoard.size() != TicTacToeNumberOfSpaces))
@@ -230,19 +250,19 @@ void Ultimate3TState::setBoard(std::vector<std::vector<player>> newBoard) {
     board_ = newBoard;
 }
 
-const move Ultimate3TState::getBestMove() { return bestMove_; }
+move Ultimate3TState::getBestMove() const { return bestMove_; }
 
 void Ultimate3TState::setBestMove(move newBestMove) { bestMove_ = newBestMove; }
 
-const activeBoard Ultimate3TState::getActiveBoard() { return activeBoard_; }
+activeBoard Ultimate3TState::getActiveBoard() const { return activeBoard_; }
 
 void Ultimate3TState::setActiveBoard(activeBoard newActiveBoard) { activeBoard_ = newActiveBoard; }
 
-const player Ultimate3TState::getActivePlayer() { return activePlayer_; }
+player Ultimate3TState::getActivePlayer() const { return activePlayer_; }
 
 void Ultimate3TState::setActivePlayer(player newActivePlayer) { activePlayer_ = newActivePlayer; }
 
-const player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber) 
+player Ultimate3TState::getSpacePlayed(int boardNumber, int spaceNumber) const
 {
     if ((boardNumber >= TicTacToeNumberOfSpaces) or (spaceNumber >= TicTacToeNumberOfSpaces))
     {
@@ -327,7 +347,7 @@ bool Ultimate3TState::isTerminalState()
     return utility() != player::neither;
 }
 
-void numberBinaryInsertion(int number, int size, std::bitset<ENCODINGSIZE> binary)
+void Ultimate3TState::numberBinaryInsertion(int number, int size, std::bitset<ENCODINGSIZE>& binary) const
 {
     // allocate new space for the number
     binary <<= size;
@@ -340,7 +360,17 @@ void numberBinaryInsertion(int number, int size, std::bitset<ENCODINGSIZE> binar
     }
 }
 
-const std::bitset<ENCODINGSIZE> Ultimate3TState::toBinary()
+int Ultimate3TState::numberBinaryExtraction(int start, int end, std::bitset<ENCODINGSIZE>& binary) const
+{
+    int value = 0;
+    for (int i = start; i < end; i++)
+    {
+        value += binary[i]*std::pow(2, i-start);
+    }
+    return value;
+}
+
+std::bitset<ENCODINGSIZE> Ultimate3TState::toBinary() const
 {
     std::bitset<ENCODINGSIZE> binary;
 
