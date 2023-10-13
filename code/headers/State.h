@@ -12,6 +12,7 @@ Including:
     evaluationValue struct
     Ultimate3TState class
 */
+#pragma once
 #include <stdint.h>
 #include <vector>
 #include <stdexcept>
