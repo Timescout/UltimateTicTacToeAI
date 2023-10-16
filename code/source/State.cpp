@@ -288,6 +288,10 @@ void Ultimate3TState::setSpacePlayed(int boardNumber, int spaceNumber, player wh
 std::vector<move> Ultimate3TState::generateMoves()
 {
     std::vector<move> legalMoves;
+    if (isTerminalState())
+    {
+        return legalMoves;
+    }
     if (activeBoard_ != activeBoard::anyBoard)
     {
         for (int space = 0; space < TicTacToeNumberOfSpaces; space++)

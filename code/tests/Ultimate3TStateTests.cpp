@@ -5,6 +5,23 @@ Tests for the Ultimate3TState class.
 
 #include "State.h"
 #include <gtest/gtest.h>
+namespace Ultimate3TStateTestFunctions
+{
+    Ultimate3TState createTerminalState()
+    {
+        Ultimate3TState state;
+        // play in the top row for all top row boards to create a terminal state.
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                state.setSpacePlayed(i, j, player::x);
+            }
+        }
+        return state;
+    }
+}
+using namespace Ultimate3TStateTestFunctions;
 
 TEST(Ultimate3TStateTests, SetSpacePlayed_invalidSpace_ThrowsError)
 {
@@ -483,4 +500,12 @@ TEST(Ultimate3TStateTests, BinaryConstructor_CreatesCorrectObject)
         }
     }
     EXPECT_EQ(state.utility(), player::o);
+}
+
+TEST(Ultimate3TStateTests, GenerateMoves_TerminalState_GeneratesNoMoves)
+{
+    Ultimate3TState state = createTerminalState();
+    auto moves = state.generateMoves();
+
+    EXPECT_EQ(moves.size(), 0);
 }
