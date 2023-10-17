@@ -1,6 +1,11 @@
-ultimate3TState binary encoding constructor
 Investigate encoding the board info in the best move encoding in the active board section.
-File i/O
-define binary encoding scheme
 Define terminal visual output class.
 Define game-output interface class.
+Test AgentTrainer.
+Find bug in AgentTrainer, not converting binary to state correctly.
+Build Graphics class
+Build graphics object class
+figure out music
+figure out user input without pressing enter.
+build player Agent
+build TIM agent.
