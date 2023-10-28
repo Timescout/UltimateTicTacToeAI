@@ -167,7 +167,7 @@ player Ultimate3TState::boardResults(std::vector<player> board) const
         ) { return player(check); }
     }
     // if noone has won, is the game still going?
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
     {
         if (board[i] == player::neither) { return player::neither; }
     }
