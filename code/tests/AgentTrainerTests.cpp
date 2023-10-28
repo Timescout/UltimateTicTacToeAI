@@ -29,12 +29,13 @@ TEST(AgentTrainerTests, Minimax_TerminalState_DoesNotExpandMoreStates)
     std::stringstream outputStream;
     AgentTrainer trainer(outputStream);
     Ultimate3TState state = createTerminalState();
+    state.setEvaluation(evaluationValue(x, 0));
 
     trainer.minimax(state);
     trainer.writeToOutput();
     std::string output;
     outputStream >> output;
     
-    EXPECT_EQ(outputStream.str().size(), ENCODINGSIZE+1); // test that there is only one entry in the output.
+    EXPECT_EQ(outputStream.str().size(), ENCODINGSIZE+1); // test that there is only one entry in the output. size should be encodingsize + 1 since there should be a terminating newline character at the end of the encoding.
     EXPECT_EQ(state.toBinary().to_string(), output);
 }

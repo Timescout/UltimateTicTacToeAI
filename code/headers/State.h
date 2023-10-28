@@ -145,12 +145,11 @@ private:
     /// @param binary The binary string, the number will be appended to the end.
     void numberBinaryInsertion(int number, int size, std::bitset<ENCODINGSIZE>& binary) const;
 
-    /// @brief Used to extract numbers from a bitset.
-    /// @param start Where to start reading.
-    /// @param end Where to end(exclusive) reading.
+    /// @brief Used to extract numbers from a bitset. Will remove read bits from the bitset.
+    /// @param size Number of bits to read from.
     /// @param binary The bitset to extract from.
     /// @return The number extracted.
-    int numberBinaryExtraction(int start, int end, std::bitset<ENCODINGSIZE>& binary) const;
+    int numberBinaryExtraction(int size, std::bitset<ENCODINGSIZE>& binary) const;
 
 public:
 

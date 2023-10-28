@@ -509,3 +509,58 @@ TEST(Ultimate3TStateTests, GenerateMoves_TerminalState_GeneratesNoMoves)
 
     EXPECT_EQ(moves.size(), 0);
 }
+
+TEST(Ultimate3TStateTests, BinaryConstructor_ReconstructsTerminalState)
+{
+    Ultimate3TState terminalState = createTerminalState();
+    std::bitset<ENCODINGSIZE> terminalStateEncoding = terminalState.toBinary();
+
+    Ultimate3TState terminalStateReconstruction(terminalStateEncoding);
+
+    EXPECT_EQ(terminalStateEncoding, terminalStateReconstruction.toBinary());
+}
+
+TEST(Ultimate3TStateTests, BinaryConstructor_Generates_CorrectBestMove)
+{
+    Ultimate3TState state;
+    state.setBestMove(move(board1, 1));
+    std::bitset<ENCODINGSIZE> stateEncoding = state.toBinary();
+
+    Ultimate3TState stateReconstruction(stateEncoding);
+
+    EXPECT_EQ(state.getBestMove().board, stateReconstruction.getBestMove().board);
+    EXPECT_EQ(state.getBestMove().space, stateReconstruction.getBestMove().space);
+}
+
+TEST(Ultimate3TStateTests, BinaryConstructor_Generates_CorrectEvaluationValue)
+{
+    Ultimate3TState state;
+    state.setEvaluation(evaluationValue(draw, 0));
+    std::bitset<ENCODINGSIZE> stateEncoding = state.toBinary();
+
+    Ultimate3TState stateReconstruction(stateEncoding);
+
+    EXPECT_EQ(state.getEvaluation(), stateReconstruction.getEvaluation());
+}
+
+TEST(Ultimate3TStateTests, BinaryConstructor_Generates_CorrectActivePlayer)
+{
+    Ultimate3TState state;
+    state.setActivePlayer(player::o);
+    std::bitset<ENCODINGSIZE> stateEncoding = state.toBinary();
+
+    Ultimate3TState stateReconstruction(stateEncoding);
+
+    EXPECT_EQ(state.getActivePlayer(), stateReconstruction.getActivePlayer());
+}
+
+TEST(Ultimate3TStateTests, BinaryConstructor_Generates_CorrectActiveBoard)
+{
+    Ultimate3TState state;
+    state.setActiveBoard(board1);
+    std::bitset<ENCODINGSIZE> stateEncoding = state.toBinary();
+
+    Ultimate3TState stateReconstruction(stateEncoding);
+
+    EXPECT_EQ(state.getActiveBoard(), stateReconstruction.getActiveBoard());
+}

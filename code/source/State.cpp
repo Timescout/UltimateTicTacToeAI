@@ -197,21 +197,22 @@ Ultimate3TState::~Ultimate3TState() {}
 
 Ultimate3TState::Ultimate3TState(std::bitset<ENCODINGSIZE> binaryEncoding) 
 {
-    bestMove_ = move(numberBinaryExtraction(0, 8, binaryEncoding));
-    evaluation_ = evaluationValue(player(numberBinaryExtraction(8, 10, binaryEncoding)), 0);
-    activePlayer_ = player(numberBinaryExtraction(10, 12, binaryEncoding));
-    activeBoard_ = activeBoard(numberBinaryExtraction(12, 16, binaryEncoding));
+    std::bitset<ENCODINGSIZE> copy = binaryEncoding;
+    bestMove_ = move(numberBinaryExtraction(8, copy));
+    evaluation_ = evaluationValue(player(numberBinaryExtraction(2, copy)), 0);
+    activePlayer_ = player(numberBinaryExtraction(2, copy));
+    activeBoard_ = activeBoard(numberBinaryExtraction(4, copy));
     superBoardResults_ = std::vector<player>(TicTacToeNumberOfSpaces, player::neither);
     for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
     {
-        superBoardResults_[i] = player(numberBinaryExtraction(16+i*2, 18+i*2, binaryEncoding));
+        superBoardResults_[TicTacToeNumberOfSpaces-(i +1)] = player(numberBinaryExtraction(2, copy));
     }
     board_ = std::vector<std::vector<player>>(TicTacToeNumberOfSpaces, std::vector<player>(TicTacToeNumberOfSpaces, player::neither));
     for (int i = 0; i < TicTacToeNumberOfSpaces; i++)
     {
         for (int j = 0; j < TicTacToeNumberOfSpaces; j++)
         {
-            board_[i][j] = player(numberBinaryExtraction(36 + (i + j) * 2, 38 + (i + j) * 2, binaryEncoding));
+            board_[TicTacToeNumberOfSpaces-(i +1)][TicTacToeNumberOfSpaces-(j +1)] = player(numberBinaryExtraction(2, copy));
         }
     }
 }
@@ -364,12 +365,13 @@ void Ultimate3TState::numberBinaryInsertion(int number, int size, std::bitset<EN
     }
 }
 
-int Ultimate3TState::numberBinaryExtraction(int start, int end, std::bitset<ENCODINGSIZE>& binary) const
+int Ultimate3TState::numberBinaryExtraction(int size, std::bitset<ENCODINGSIZE>& binary) const
 {
     int value = 0;
-    for (int i = start; i < end; i++)
+    for (int i = 0; i < size; i++)
     {
-        value += binary[i]*std::pow(2, i-start);
+        value += binary[0]*std::pow(2, i);
+        binary >>= 1;
     }
     return value;
 }
