@@ -5,6 +5,7 @@
 
 void AgentTrainer::init(std::ostream& outputStream)
 {
+    statesExpanded_ = 0;
     outputStream_ = &outputStream;
     transpositionTable_ = std::map<std::bitset<ENCODINGSIZE>, std::pair<evaluationValue, move>, EncodingCompare>();
 }
@@ -31,9 +32,7 @@ evaluationValue AgentTrainer::minimax(Ultimate3TState& state)
     auto transpositionTableEntry = transpositionTable_.find(state.toBinary());
     if (transpositionTableEntry != transpositionTable_.end())
     {
-        evaluationValue value = transpositionTableEntry->second.first;
-        value.depth += 1;
-        return value; // Return the evaluationValue in the transposition table.
+        return transpositionTableEntry->second.first; // Return the evaluationValue in the transposition table.
     }
 
     if (state.isTerminalState())
@@ -47,6 +46,7 @@ evaluationValue AgentTrainer::minimax(Ultimate3TState& state)
     evaluationValue value = state.getActivePlayer() == player::x ? evaluationValue(player::o, 0) : evaluationValue(player::x, 0);
     evaluationValue nextStateValue;
     std::vector<move> actions = state.generateMoves();
+    statesExpanded_++;
     move bestMove = actions[0];
     for (std::vector<move>::iterator action = actions.begin(); action != actions.end(); action++)
     {
@@ -58,10 +58,10 @@ evaluationValue AgentTrainer::minimax(Ultimate3TState& state)
             value = nextStateValue;
         }
     }
-    // insert into transposition table
-    transpositionTable_.insert(std::pair<std::bitset<ENCODINGSIZE>, std::pair<evaluationValue, move>>(state.toBinary(), std::pair<evaluationValue, move>(value, bestMove)));
     // because there was a move to get to this state, we must increase the depth by one here.
     value.depth += 1;
+    // insert into transposition table
+    transpositionTable_.insert(std::pair<std::bitset<ENCODINGSIZE>, std::pair<evaluationValue, move>>(state.toBinary(), std::pair<evaluationValue, move>(value, bestMove)));
     return value;
 }
 
@@ -80,6 +80,10 @@ void AgentTrainer::resetTranspositionTable()
 {
     transpositionTable_ = std::map<std::bitset<ENCODINGSIZE>, std::pair<evaluationValue, move>, EncodingCompare>();
 }
+
+unsigned int AgentTrainer::getStatesExpanded() { return statesExpanded_; }
+
+void AgentTrainer::resetStatesExpanded() { statesExpanded_ = 0; }
 
 ///// EncodingCompare definitions /////
 

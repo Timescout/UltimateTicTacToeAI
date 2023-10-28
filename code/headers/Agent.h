@@ -26,7 +26,11 @@ private:
     /// @brief Transposition table that holds states that have already been searched. The value mapped to is a pair, the best move in the state and the evaluation of the best move. This is because to create the encoding for a state we already need to know the best move which defeats the purpose of the transposition table and the depth is not encoded at all. In order to preserve depth values, evaluation values are needed.
     std::map<std::bitset<ENCODINGSIZE>, std::pair<evaluationValue, move>, EncodingCompare> transpositionTable_;
 
+    /// @brief The Stream that the transposition table will be written to when writeToOutput() is called.
     std::ostream* outputStream_;
+
+    /// @brief Keeps track of the number of times generateMoves() is called during minimax. 
+    unsigned int statesExpanded_;
 
     void init(std::ostream& outputStream);
 
@@ -51,5 +55,11 @@ public:
 
     /// @brief Resets the transposition table for a new state. This is so that running minimax multiple times does not cross contaminate runs.
     void resetTranspositionTable();
+
+    /// @brief Gets the number of states expanded during the minimax algorithm.
+    unsigned int getStatesExpanded();
+
+    /// @brief Resets the number of states expanded during the minimax algorithm to 0. 
+    void resetStatesExpanded();
 };
 
