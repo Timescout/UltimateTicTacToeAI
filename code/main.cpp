@@ -7,29 +7,18 @@
 
 int main()
 {
-    std::cout << "hello World\n";
+    std::ofstream file("brain.txt");
+    if (!file.is_open()) 
+    {
+        std::cerr << "file failed to open\n";
+        return 1;
+    }
 
-    // std::bitset<196> encoding(1);
-    // encoding <<= 2;
+    AgentTrainer trainer(file);
+    Ultimate3TState state;
+    trainer.minimax(state);
+    trainer.writeToOutput();
 
-
-
-
-    // std::fstream file("brain.txt");
-    // if(!file.is_open()) { std::cerr << "file failed to open\n"; throw; }
-    // file << encoding;
-    // file.close();
-
-
-    std::bitset<ENCODINGSIZE> seven(7);
-    std::bitset<ENCODINGSIZE> eight(8);
-
-    std::set<std::bitset<ENCODINGSIZE>, EncodingCompare> mySet;
-
-    mySet.insert(seven);
-    mySet.insert(eight);
-
-    std::cout << mySet.size() << "\n";
-
+    file.close();
     return 0;
 }
