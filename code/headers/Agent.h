@@ -8,6 +8,7 @@ This file will contain the game code of the AI Agent who plays the game and the 
 */
 #pragma once
 #include "State.h"
+#include "Game.h"
 #include <map>
 
 /// @brief Used to compare two bitsets of ENCODINGSIZE bits. This function is used to create a set of encodings.
@@ -63,3 +64,20 @@ public:
     void resetStatesExpanded();
 };
 
+class TIM : public controller
+{
+private:
+    /// @brief Transposition table for holding states already evaluated.
+    std::map<std::bitset<ENCODINGSIZE>, std::pair<move, evaluationValue>, EncodingCompare> transpositionTable_;
+
+    unsigned int statesExpanded_;
+
+    void init();
+public:
+    TIM();
+    ~TIM();
+
+    move playMove(Ultimate3TState state);
+
+    std::pair<move, evaluationValue> search(Ultimate3TState& state, evaluationValue alpha, evaluationValue beta);
+};

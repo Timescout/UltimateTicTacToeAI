@@ -99,3 +99,56 @@ bool EncodingCompare::operator()(std::bitset<ENCODINGSIZE> a, std::bitset<ENCODI
     // If all the bits match, Then the
     return false;
 }
+
+///// TIM definitions /////
+
+std::pair<move, evaluationValue> TIM::search(Ultimate3TState& state, evaluationValue alpha = evaluationValue(player::o, 0), evaluationValue beta = evaluationValue(player::x, 0))
+{
+    // check if the state is in the transposition table
+    auto transpositionTableEntry = transpositionTable_.find(state.toBinary());
+    if (transpositionTableEntry != transpositionTable_.end())
+    {
+        return transpositionTableEntry->second; // Return the move and evaluationValue in the transposition table.
+    }
+
+    if (state.isTerminalState())
+    {
+        std::pair<move, evaluationValue> value(move(), evaluationValue(state.utility(), 0));
+        // put state into the transposition table
+        transpositionTable_.insert( std::pair<std::bitset<ENCODINGSIZE>, std::pair<move, evaluationValue>> (state.toBinary(), value) );
+        return value;
+    }
+
+    evaluationValue value = state.getActivePlayer() == player::x ? evaluationValue(player::o, 0) : evaluationValue(player::x, 0);
+
+    std::pair<move, evaluationValue> nextStateValue;
+    std::vector<move> actions = state.generateMoves();
+    statesExpanded_++;
+    move bestMove = actions[0];
+    for (std::vector<move>::iterator action = actions.begin(); action != actions.end(); action++)
+    {
+        Ultimate3TState nextState = state.generateSuccessorState(*action);
+        nextStateValue = search(nextState, alpha, beta);
+        if (!(state.getActivePlayer() == player::x xor value > nextStateValue.second))
+        {
+            bestMove = *action;
+            value = nextStateValue.second;
+        }
+        // Update alpha or beta and check if we can prune
+        if (state.getActivePlayer() == player::x)
+        {
+            alpha = std::max(alpha, value);
+            if ( value >=  beta) { break; }
+        }
+        else
+        {
+            beta = std::min(beta, value);
+            if ( value <= alpha) { break; }
+        }
+    }
+    // because there was a move to get to this state, we must increase the depth by one here.
+    value.depth += 1;
+    // insert into transposition table
+    transpositionTable_.insert(std::pair<std::bitset<ENCODINGSIZE>, std::pair<move, evaluationValue>>(state.toBinary(), std::pair<move, evaluationValue>(bestMove, value)));
+    return std::pair<move, evaluationValue>(bestMove, value);
+}
