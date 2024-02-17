@@ -18,6 +18,18 @@ Including:
 #include <stdexcept>
 #include <bitset>
 
+template <typename MoveType, typename ActorType, typename StateType, unsigned int BinarySize>
+class State
+{
+public:
+    virtual bool isTerminalState() = 0;
+    virtual std::vector<MoveType> generateMoves() = 0;
+    virtual StateType generateSuccessorState(MoveType) = 0;
+    virtual ActorType utility() = 0;
+    virtual std::bitset<BinarySize> toBinary() const = 0;
+    virtual bool isMaxNode() = 0;
+};
+
 // Defines encoding for which board is active. 
 enum activeBoard : uint8_t
 {
@@ -98,9 +110,10 @@ public:
 #define ENCODINGSIZE 196
 
 /// @brief A game state for ultimate tic tac toe. 
-class Ultimate3TState
+class Ultimate3TState : public State<move, player, Ultimate3TState, ENCODINGSIZE>
 {
 private:
+
     /// @brief The number of Spaces in a normal Tic Tac Toe grid. This is used throughout to check bounds and to prevent magic numbers.
     static const int TicTacToeNumberOfSpaces = 9;
 
@@ -152,6 +165,8 @@ private:
     int numberBinaryExtraction(int size, std::bitset<ENCODINGSIZE>& binary) const;
 
 public:
+
+    
 
     ///// Constructors and destructor /////
 
@@ -218,4 +233,6 @@ public:
     // Warning, not yet implemented.
     /// @warning The depth value of the evaluation_ is not saved and so this function is lossy.
     std::bitset<ENCODINGSIZE> toBinary() const;
+
+    bool isMaxNode();
 };

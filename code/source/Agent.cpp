@@ -101,8 +101,8 @@ bool EncodingCompare::operator()(std::bitset<ENCODINGSIZE> a, std::bitset<ENCODI
 }
 
 ///// TIM definitions /////
-
-std::pair<move, evaluationValue> TIM::search(Ultimate3TState& state, evaluationValue alpha = evaluationValue(player::o, 0), evaluationValue beta = evaluationValue(player::x, 0))
+template <typename MoveType, typename ValueType, typename StateType, unsigned int BinaryLength>
+std::pair<MoveType, ValueType> TIM<StateType>::search(StateType& state, ValueType alpha = ValueType.createMin(), evaluationValue beta = evaluationValue(player::x, 0))
 {
     // check if the state is in the transposition table
     auto transpositionTableEntry = transpositionTable_.find(state.toBinary());

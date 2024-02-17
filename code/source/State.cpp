@@ -401,3 +401,8 @@ std::bitset<ENCODINGSIZE> Ultimate3TState::toBinary() const
     
     return binary;
 }
+
+bool Ultimate3TState::isMaxNode()
+{
+    return getActivePlayer() == player::x;
+}

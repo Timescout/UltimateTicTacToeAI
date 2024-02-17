@@ -63,7 +63,7 @@ public:
     /// @brief Resets the number of states expanded during the minimax algorithm to 0. 
     void resetStatesExpanded();
 };
-
+template <typename StateType>
 class TIM : public controller
 {
 private:
@@ -77,7 +77,7 @@ public:
     TIM();
     ~TIM();
 
-    move playMove(Ultimate3TState state);
+    move playMove(StateType state);
 
-    std::pair<move, evaluationValue> search(Ultimate3TState& state, evaluationValue alpha, evaluationValue beta);
+    std::pair<move, evaluationValue> search(StateType& state, evaluationValue alpha, evaluationValue beta);
 };
