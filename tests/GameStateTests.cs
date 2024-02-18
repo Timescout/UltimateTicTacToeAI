@@ -6,6 +6,8 @@ namespace GameLogicTests
 {
     public class TestGameState : GameStateBase<int>
     {
+        public static int nodesExplored = 0;
+
         private bool maxNode;
         private int stateNumber { get; set; }
         private int[][] reachableStates { get; set; }
