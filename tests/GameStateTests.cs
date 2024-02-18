@@ -1,18 +1,20 @@
-using System;
-using System.Numerics;
 using GameLogic;
 
 
 
-namespace Tests
+namespace GameLogicTests
 {
     public class TestGameState : GameStateBase<int>
     {
+        private bool maxNode;
         private int stateNumber { get; set; }
         private int[][] reachableStates { get; set; }
         private int[] utilities { get; set; }
 
-        public TestGameState() {}
+        public TestGameState() 
+        {
+            maxNode = true;
+        }
 
         public override int utility()
         {
@@ -35,6 +37,10 @@ namespace Tests
         public override bool isTerminal()
         {
             return reachableStates[stateNumber].Length == 0; 
+        }
+        public override bool isMaxNode()
+        {
+            return maxNode;
         }
     }
 }

@@ -1,7 +1,5 @@
 
 
-using System.Numerics;
-
 namespace GameLogic
 {
     /// <summary>
@@ -13,10 +11,15 @@ namespace GameLogic
 
         public abstract MoveType[] generateMoves();
 
+        /// <summary>
+        /// Returns whether the current state is terminal. If there are no legal moves than the state must be terminal.
+        /// </summary>
         public abstract bool isTerminal();
 
         public abstract GameStateBase<MoveType> generateSuccessor(MoveType action);
 
         public abstract int utility();
+
+        public abstract bool isMaxNode();
     }
 }
