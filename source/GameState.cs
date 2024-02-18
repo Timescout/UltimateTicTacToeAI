@@ -11,7 +11,7 @@ namespace GameLogic
     public abstract class GameStateBase <MoveType>
     {
 
-        public abstract Vector<int> generateMoves();
+        public abstract MoveType[] generateMoves();
 
         public abstract bool isTerminal();
 

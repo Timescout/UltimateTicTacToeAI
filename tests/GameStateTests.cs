@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using GameLogic;
 
@@ -8,8 +9,8 @@ namespace Tests
     public class TestGameState : GameStateBase<int>
     {
         private int stateNumber { get; set; }
-        private Vector<Vector<int>> reachableStates { get; set; }
-        private Vector<int> utilities { get; set; }
+        private int[][] reachableStates { get; set; }
+        private int[] utilities { get; set; }
 
         public TestGameState() {}
 
@@ -26,14 +27,14 @@ namespace Tests
             return successor;
         }
 
-        public override Vector<int> generateMoves()
+        public override int[] generateMoves()
         {
             return reachableStates[stateNumber];
         }
 
         public override bool isTerminal()
         {
-            return false; // TODO somehow figure out how to compare the length of reachableStates[stateNumber] to 0.
+            return reachableStates[stateNumber].Length == 0; 
         }
     }
 }
