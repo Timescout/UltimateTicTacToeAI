@@ -7,45 +7,52 @@ namespace GameLogic
     public class Solver <MoveType>
     {
         public Solver() {}
-        public int search(GameStateBase<MoveType> state, int alpha = int.MinValue, int beta = int.MaxValue) 
+
+        /// <summary>
+        /// Runs an Alpha Beta search through the entire game state tree. 
+        /// </summary>
+        /// <param name="state">The State to search.</param>
+        /// <param name="alpha"></param>
+        /// <param name="beta"></param>
+        /// <returns>A tuple where Item1 is the best move in the position, and Item2 is the Value of that move.</returns>
+        public (MoveType, int) search(GameStateBase<MoveType> state, int alpha = int.MinValue, int beta = int.MaxValue) 
         {
             // Check for base case.
             if (state.isTerminal())
             {
-                return state.utility();
+                return (default(MoveType), state.utility());
             }
             
             // setup branching
-            int utility = state.isMaxNode() ?  int.MinValue : int.MaxValue;
-            int nextStateUtility;
+            // Best Move and Utility pairs
+            (MoveType, int) bestMoveValues = (default(MoveType), state.isMaxNode() ?  int.MinValue : int.MaxValue);
+            (MoveType, int) nextStateValues;
             MoveType[] actions = state.generateMoves();
-            MoveType bestMove;
 
             // branch for each possible action and evaluate them recursivly.
             foreach (MoveType action in actions)
             {
-                nextStateUtility = search(state.generateSuccessor(action), alpha, beta);
-                if ((state.isMaxNode() == utility > nextStateUtility))
+                nextStateValues = search(state.generateSuccessor(action), alpha, beta);
+                if ((state.isMaxNode() == bestMoveValues.Item2 > nextStateValues.Item2)) // Compare the utility of the best move and the next state.
                 {
-                    bestMove = action;
-                    utility = nextStateUtility;
+                    bestMoveValues = nextStateValues;
                 }
 
                 // Update alpha or beta.
                 if (state.isMaxNode())
                 {
-                    alpha = Math.Max(alpha, utility);
-                    if (utility >= beta) { break; }
+                    alpha = Math.Max(alpha, bestMoveValues.Item2);
+                    if (bestMoveValues.Item2 >= beta) { break; }
                 }
                 else
                 {
-                    beta = Math.Min(beta, utility);
-                    if (utility <= alpha) { break; }
+                    beta = Math.Min(beta, bestMoveValues.Item2);
+                    if (bestMoveValues.Item2 <= alpha) { break; }
                 }
             }
 
-            // Now utility is the true value of the state. 
-            return utility;
+            // Now bestMoveValues.Item2 is the true value of the state, and bestMoveValues.Item1 is the move associated with it.
+            return bestMoveValues;
         }
     }
 }
