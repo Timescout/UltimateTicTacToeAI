@@ -53,6 +53,7 @@ namespace SolverTests
             successor.reachableStates = reachableStates;
             successor.utilities = utilities;
             successor.stateNumber = action;
+            successor.maxNode = !maxNode;
             return successor;
         }
 
@@ -98,6 +99,15 @@ namespace SolverTests
             Assert.That(TestGameState.nodesExplored, Is.EqualTo(1));
         }
 
+
+        /// <summary>
+        /// Tree:
+        /// 0
+        /// -1
+        /// -2
+        /// Utilities:
+        /// 0, 2, 0
+        /// </summary>
         [Test]
         public void smallTree_returns_move1Utility2()
         {
@@ -116,6 +126,27 @@ namespace SolverTests
             Assert.That(searchResult.Item2, Is.EqualTo(2), "Utility was expected to be 2");
             Assert.That(TestGameState.nodesExplored, Is.EqualTo(3), "Expected nodesExplored to be 3");
 
+        }
+
+        [Test]
+        public void middleTree_prunes_1node()
+        {
+            TestGameState.nodesExplored = 0;
+            TestGameState testState = new TestGameState();
+            testState.reachableStates = new int[5][];
+            testState.reachableStates[0] = new int[2] {1, 2};
+            testState.reachableStates[1] = new int[0];
+            testState.reachableStates[2] = new int[2] {3, 4};
+            testState.reachableStates[3] = new int[0];
+            testState.reachableStates[4] = new int[0];
+            testState.utilities = new int[5] {0, 1, 0, 0, 0};
+            Solver<TestGameState, int> solver = new Solver<TestGameState, int>();
+
+            (int, int) searchResult = solver.search(testState);
+
+            Assert.That(searchResult.Item1, Is.EqualTo(1), "Expected action number to be 1");
+            Assert.That(searchResult.Item2, Is.EqualTo(1), "Expected utility to be 1");
+            Assert.That(TestGameState.nodesExplored, Is.EqualTo(4), "Expected nodesExplored to be 4");
         }
     }
 }
