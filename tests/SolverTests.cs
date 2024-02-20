@@ -51,6 +51,7 @@ namespace SolverTests
         {
             TestGameState successor = new TestGameState();
             successor.reachableStates = reachableStates;
+            successor.utilities = utilities;
             successor.stateNumber = action;
             return successor;
         }
@@ -111,9 +112,9 @@ namespace SolverTests
 
             (int, int) searchResult = solver.search(testState);
 
-            Assert.That(searchResult.Item1, Is.EqualTo(1)); // check right action
-            Assert.That(searchResult.Item2, Is.EqualTo(2)); // check right utility
-            Assert.That(TestGameState.nodesExplored, Is.EqualTo(3));
+            Assert.That(searchResult.Item1, Is.EqualTo(1), "Action number was expected to be 1");
+            Assert.That(searchResult.Item2, Is.EqualTo(2), "Utility was expected to be 2");
+            Assert.That(TestGameState.nodesExplored, Is.EqualTo(3), "Expected nodesExplored to be 3");
 
         }
     }
