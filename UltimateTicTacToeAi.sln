@@ -4,9 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UltimateTicTacToeAi", "Ulti
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-	Debug|Any CPU = Debug|Any CPU
-	ExportDebug|Any CPU = ExportDebug|Any CPU
-	ExportRelease|Any CPU = ExportRelease|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		ExportDebug|Any CPU = ExportDebug|Any CPU
+		ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B6DA83B9-8F8F-4233-9ED2-B909AE0FCBCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -15,5 +15,11 @@ Global
 		{B6DA83B9-8F8F-4233-9ED2-B909AE0FCBCF}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
 		{B6DA83B9-8F8F-4233-9ED2-B909AE0FCBCF}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
 		{B6DA83B9-8F8F-4233-9ED2-B909AE0FCBCF}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{58BB09E6-9675-4D73-9994-E131C043EA21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BB09E6-9675-4D73-9994-E131C043EA21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58BB09E6-9675-4D73-9994-E131C043EA21}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BB09E6-9675-4D73-9994-E131C043EA21}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{58BB09E6-9675-4D73-9994-E131C043EA21}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BB09E6-9675-4D73-9994-E131C043EA21}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal
