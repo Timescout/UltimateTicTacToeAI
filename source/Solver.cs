@@ -4,7 +4,8 @@ using System;
 
 namespace GameLogic
 {
-    public class Solver <MoveType>
+    public class Solver <StateType, MoveType> 
+    where StateType : GameStateBase<MoveType, StateType> 
     {
         public Solver() {}
 
@@ -15,7 +16,7 @@ namespace GameLogic
         /// <param name="alpha"></param>
         /// <param name="beta"></param>
         /// <returns>A tuple where Item1 is the best move in the position, and Item2 is the Value of that move.</returns>
-        public (MoveType, int) search(GameStateBase<MoveType> state, int alpha = int.MinValue, int beta = int.MaxValue) 
+        public (MoveType, int) search(StateType state, int alpha = int.MinValue, int beta = int.MaxValue) 
         {
             // Check for base case.
             if (state.isTerminal())
