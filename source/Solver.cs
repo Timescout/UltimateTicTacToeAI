@@ -1,6 +1,7 @@
 
 
 using System;
+using System.Collections.Generic;
 
 namespace GameLogic
 {
@@ -28,7 +29,7 @@ namespace GameLogic
             // Best Move and Utility pairs
             (MoveType, int) bestMoveValues = (default(MoveType), state.isMaxNode() ? int.MinValue : int.MaxValue);
             (MoveType, int) nextStateValues;
-            MoveType[] actions = state.generateMoves();
+            List<MoveType> actions = state.generateMoves();
 
             // branch for each possible action and evaluate them recursivly.
             foreach (MoveType action in actions)

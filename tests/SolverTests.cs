@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 
 using GameLogic;
-using NuGet.Frameworks;
 
 
 namespace SolverTests
@@ -29,7 +29,7 @@ namespace SolverTests
         /// <summary>
         /// Contains a state connection table. the first index is the array of states that the index state can reach.
         /// </summary>
-        public int[][] reachableStates { get; set; }
+        public List<List<int>> reachableStates { get; set; }
 
         /// <summary>
         /// Contains the utility of each state.
@@ -57,14 +57,14 @@ namespace SolverTests
             return successor;
         }
 
-        public override int[] generateMoves()
+        public override List<int> generateMoves()
         {
             return reachableStates[stateNumber];
         }
 
         public override bool isTerminal()
         {
-            return reachableStates[stateNumber].Length == 0; 
+            return reachableStates[stateNumber].Count == 0; 
         }
 
         public override bool isMaxNode()
@@ -87,8 +87,7 @@ namespace SolverTests
         {
             TestGameState.nodesExplored = 0; // Reset for proper count.
             TestGameState test = new TestGameState();
-            test.reachableStates = new int[1][];
-            test.reachableStates[0] = new int[0];
+            test.reachableStates = new List<List<int>> { new List<int>()};
             test.utilities = new int[1] {1};
             Solver<TestGameState, int> solver = new Solver<TestGameState, int>();
 
@@ -113,10 +112,12 @@ namespace SolverTests
         {
             TestGameState.nodesExplored = 0;
             TestGameState testState = new TestGameState();
-            testState.reachableStates = new int[3][];
-            testState.reachableStates[0] = new int[2] {1, 2};
-            testState.reachableStates[1] = new int[0];
-            testState.reachableStates[2] = new int[0];
+            testState.reachableStates = new List<List<int>>
+            {
+                new List<int> {1, 2},
+                new List<int> {},
+                new List<int> {}
+            };
             testState.utilities = new int[3] {0, 2, 0};
             Solver<TestGameState, int> solver = new Solver<TestGameState, int>();
 
@@ -135,21 +136,23 @@ namespace SolverTests
         /// -1
         /// -2
         /// --3
-        /// --4
+        /// --4 // should be pruned
         /// utilities:
         /// 0, 1, 0, 0, 0
         /// </summary>
         [Test]
-        public void middleTree_prunes_1node()
+        public void middleTree_minNodePrunes_1node()
         {
             TestGameState.nodesExplored = 0;
             TestGameState testState = new TestGameState();
-            testState.reachableStates = new int[5][];
-            testState.reachableStates[0] = new int[2] {1, 2};
-            testState.reachableStates[1] = new int[0];
-            testState.reachableStates[2] = new int[2] {3, 4};
-            testState.reachableStates[3] = new int[0];
-            testState.reachableStates[4] = new int[0];
+            testState.reachableStates = new List<List<int>>
+            {
+                new List<int> {1, 2},
+                new List<int> {},
+                new List<int> {3, 4},
+                new List<int> {},
+                new List<int> {}
+            };
             testState.utilities = new int[5] {0, 1, 0, 0, 0};
             Solver<TestGameState, int> solver = new Solver<TestGameState, int>();
 
@@ -158,6 +161,43 @@ namespace SolverTests
             Assert.That(searchResult.Item1, Is.EqualTo(1), "Expected action number to be 1");
             Assert.That(searchResult.Item2, Is.EqualTo(1), "Expected utility to be 1");
             Assert.That(TestGameState.nodesExplored, Is.EqualTo(4), "Expected nodesExplored to be 4");
+        }
+
+        /// <summary>
+        /// Tree:
+        /// -0
+        /// --1
+        /// --2
+        /// ---3
+        /// ---4
+        /// ----5
+        /// ----6
+        /// Utilities:
+        /// 0, 1, 0, 2, 0, 3, 0
+        /// </summary>
+        [Test]
+        public void largeTree_maxNodePrunes_1node()
+        {
+            TestGameState.nodesExplored = 0;
+            TestGameState testState = new TestGameState();
+            testState.reachableStates = new List<List<int>>
+            {
+                new List<int> {1, 2},
+                new List<int> {},
+                new List<int> {3, 4},
+                new List<int> {},
+                new List<int> {5, 6},
+                new List<int> {},
+                new List<int> {}
+            };
+            testState.utilities = new int[7] {0, 1, 0, 2, 0, 3, 0};
+            Solver<TestGameState, int> solver = new Solver<TestGameState, int>();
+
+            (int, int) searchResult = solver.search(testState);
+
+            Assert.That(searchResult.Item1, Is.EqualTo(2), "Expected action to be 2");
+            Assert.That(searchResult.Item1, Is.EqualTo(2), "Expected utility to be 2");
+            Assert.That(TestGameState.nodesExplored, Is.EqualTo(6), "Expected nodesExplored to be 6");
         }
     }
 }

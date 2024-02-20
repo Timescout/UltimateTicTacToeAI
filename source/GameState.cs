@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 
 namespace GameLogic
 {
@@ -12,7 +13,7 @@ namespace GameLogic
         /// <summary>
         /// Must Return an array of legal moves in this state. If this list is empty then the state must be Terminal and isTerminal() must return true.
         /// </summary>
-        public abstract MoveType[] generateMoves();
+        public abstract List<MoveType> generateMoves();
 
         /// <summary>
         /// Returns whether the current state is terminal. If there are no legal moves than the state must be terminal.
