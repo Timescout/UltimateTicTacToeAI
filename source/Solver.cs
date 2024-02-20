@@ -26,7 +26,7 @@ namespace GameLogic
             
             // setup branching
             // Best Move and Utility pairs
-            (MoveType, int) bestMoveValues = (default(MoveType), state.isMaxNode() ?  int.MinValue : int.MaxValue);
+            (MoveType, int) bestMoveValues = (default(MoveType), state.isMaxNode() ? int.MinValue : int.MaxValue);
             (MoveType, int) nextStateValues;
             MoveType[] actions = state.generateMoves();
 
@@ -34,9 +34,10 @@ namespace GameLogic
             foreach (MoveType action in actions)
             {
                 nextStateValues = search(state.generateSuccessor(action), alpha, beta);
-                if ((state.isMaxNode() == bestMoveValues.Item2 > nextStateValues.Item2)) // Compare the utility of the best move and the next state.
+                if ((state.isMaxNode() ==  nextStateValues.Item2 > bestMoveValues.Item2)) // Compare the utility of the best move and the next state.
                 {
-                    bestMoveValues = nextStateValues;
+                    bestMoveValues.Item1 = action;
+                    bestMoveValues.Item2 = nextStateValues.Item2;
                 }
 
                 // Update alpha or beta.
