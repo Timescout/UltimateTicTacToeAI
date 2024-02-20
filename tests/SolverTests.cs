@@ -128,6 +128,17 @@ namespace SolverTests
 
         }
 
+
+        /// <summary>
+        /// Tree:
+        /// 0
+        /// -1
+        /// -2
+        /// --3
+        /// --4
+        /// utilities:
+        /// 0, 1, 0, 0, 0
+        /// </summary>
         [Test]
         public void middleTree_prunes_1node()
         {
