@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 
@@ -7,13 +8,22 @@ namespace GameLogic
 {
     public struct TicTacToeMove
     {
-        [Range(0, 8, ErrorMessage = "TicTacToeMove board must be between 0 and 8 inclusive")]
-        public int board {get; set;}
-        [Range(0, 8, ErrorMessage = "TicTacToeMove space must be between 0 and 8 inclusive")]
-        public int space {get; set;}
+        public int board {get;}
+
+        public int space {get;}
 
         public TicTacToeMove(int boardNum, int spaceNum)
         {
+            // Check that the move is in bounds
+            if (boardNum < 0 || boardNum > 8)
+            {
+                throw new ArgumentOutOfRangeException("TicTacToeMove boardNum must be between 0 and 8");
+            }
+            if (spaceNum < 0 || spaceNum > 8)
+            {
+                throw new ArgumentOutOfRangeException("TicTacToeMove spaceNum must be between 0 and 8");
+            }
+
             board = boardNum;
             space = spaceNum;
         }
