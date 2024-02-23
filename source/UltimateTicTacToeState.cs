@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 
 namespace GameLogic
@@ -29,17 +30,36 @@ namespace GameLogic
 
     public class UltimateTicTacToeState : GameStateBase<TicTacToeMove, UltimateTicTacToeState>
     {
-        private int depth_ = 0; // Counts the total number of moves by the players. This is used in utility() so that moves which end the game quicker are prioritized.
+        // Counts the total number of moves by the players. This is used in utility() so that moves which end the game quicker are prioritized.
+        public int depth {get; private set;} 
 
+        // use isMaxNode() for access.
         private bool isXToPlay = true;
 
         // used to track the status of the small nine boards. Because who has won a board can change if new moves are played there, and the rules allow for moves to continue to be played in won boards, this is needed to prevent boards changing hands.
-        private List<char> boardStatus_;
+        public List<char> boardStatus_ {get; protected set;}
 
-        private List<List<char>> board_ {get; set;}
+        public List<List<char>> board_ {get; protected set;}
+
+        public enum boardNumber 
+        {
+            board0 = 0,
+            board1 = 1,
+            board2 = 2,
+            board3 = 3,
+            board4 = 4,
+            board5 = 5,
+            board6 = 6,
+            board7 = 7,
+            board8 = 8,
+            anyBoard
+        }
+        public boardNumber activeBoard {get; protected set;}
 
         private void init()
         {
+            activeBoard = boardNumber.anyBoard;
+            depth = 0;
             // set up the board
             board_ = new List<List<char>>();
             for (int i = 0; i < 9; i++)
@@ -47,7 +67,7 @@ namespace GameLogic
                 board_.Add(new List<char>());
                 for (int j = 0; j < 9; j++)
                 {
-                    board_[i].Add('E'); // E for empty
+                    board_[i].Add('N'); // N for none
                 }
             }
 
@@ -67,36 +87,22 @@ namespace GameLogic
         public UltimateTicTacToeState(UltimateTicTacToeState copyState) // I think this is creating a copy, then copying the copy. Feels bad but it yells at me when I try to pass by reference.
         {
             board_ = copyState.board_;
-            activeBoard_ = copyState.activeBoard_;
-            depth_ = copyState.depth_;
+            activeBoard = copyState.activeBoard;
+            depth = copyState.depth;
             boardStatus_ = copyState.boardStatus_;
         }
 
-        private enum boardNumber 
-        {
-            board0 = 0,
-            board1 = 1,
-            board2 = 2,
-            board3 = 3,
-            board4 = 4,
-            board5 = 5,
-            board6 = 6,
-            board7 = 7,
-            board8 = 8,
-            anyBoard
-        }
-        private boardNumber activeBoard_ = boardNumber.anyBoard;
 
         public override List<TicTacToeMove> generateMoves()
         {
             List<TicTacToeMove> moves = new List<TicTacToeMove>();
             for (int board = 0; board < 9; board++)
             {   
-                if (activeBoard_ == boardNumber.anyBoard || activeBoard_ == (boardNumber)board)
+                if (activeBoard == boardNumber.anyBoard || activeBoard == (boardNumber)board)
                 {
                     for (int space = 0; space < 9; space++)
                     {
-                        if (board_[board][space] == default(char))
+                        if (board_[board][space] == 'N')
                         {
                             moves.Add(new TicTacToeMove(board, space));
                         }
@@ -113,12 +119,12 @@ namespace GameLogic
 
         public override bool isTerminal()
         {
-            return TicTacToeEvaluation(boardStatus_) == 'N'; // if noone has won, the game is not terminal.
+            return TicTacToeEvaluation(boardStatus_) != 'N'; // if noone has won, the game is not terminal.
         }
 
         public override int utility()
         {
-            return evaluation(TicTacToeEvaluation(boardStatus_), depth_);
+            return evaluation(TicTacToeEvaluation(boardStatus_), depth);
         }
 
         public static int evaluation(char result, int depth)
@@ -143,25 +149,25 @@ namespace GameLogic
         public override UltimateTicTacToeState generateSuccessor(TicTacToeMove action)
         {
             UltimateTicTacToeState successor = new UltimateTicTacToeState(this);
-            successor.depth_++;
+            successor.depth++;
             successor.isXToPlay = !isXToPlay; // if X is to play, now O is to play and vice versa.
             successor.board_[action.board][action.space] = isXToPlay ? 'X' : 'O'; // play the move
             if (boardStatus_[action.board] == 'N') // if the board has not been won, update the board status.
             {
                 boardStatus_[action.board] = TicTacToeEvaluation(board_[action.board]);
             }
-            successor.activeBoard_ = boardNumber.anyBoard;
+            successor.activeBoard = boardNumber.anyBoard;
             for (int i = 0; i < 9; i++) // check if there is space in the board that is supposed to be the next active board for moves to be played.
             {
-                if (successor.board_[action.space][i] == default(char))
+                if (successor.board_[action.space][i] == 'N')
                 {
-                    successor.activeBoard_ = (boardNumber)action.space;
+                    successor.activeBoard = (boardNumber)action.space;
                 }
             }
             return successor;
         }
 
-        private char TicTacToeEvaluation(List<char> board)
+        public static char TicTacToeEvaluation(List<char> board)
         {
             char[] players = {'X', 'O'};
             // check for winning players.
