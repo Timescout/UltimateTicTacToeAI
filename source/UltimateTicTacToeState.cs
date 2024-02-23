@@ -118,16 +118,21 @@ namespace GameLogic
 
         public override int utility()
         {
+            return evaluation(TicTacToeEvaluation(boardStatus_), depth_);
+        }
+
+        public static int evaluation(char result, int depth)
+        {
             int utility = 0;
-            switch (TicTacToeEvaluation(boardStatus_)) // based on the status of the board, return a utility.
+            switch (result) // based on the status of the board, return a utility.
             {
                 case 'X':
                     utility = 100;
-                    utility -= depth_;
+                    utility -= depth;
                     break;
                 case 'O':
                     utility = -100;
-                    utility += depth_;
+                    utility += depth;
                     break;
                 default:
                     break;

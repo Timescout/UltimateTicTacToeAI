@@ -2,20 +2,13 @@ using NUnit.Framework;
 
 using GameLogic;
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace UltimateTicTacToeStateTests
 {
     [TestFixture]
     public class UltimateTicTacToeStateTester
     {
-        // [Test]
-        // public void SetSpacePlayed_invalidSpace_throwsOutOfRangeError()
-        // {
-        //     UltimateTicTacToeState state = new UltimateTicTacToeState();
-
-        //     Assert.Throws();
-        // }
-
         [Test]
         public void ticTacToeMove00_creates_validMove()
         {
@@ -50,6 +43,18 @@ namespace UltimateTicTacToeStateTests
         public void ticTacToeMoven10_throws_outOfRangeError()
         {
             Assert.Throws(typeof(ArgumentOutOfRangeException), () => {TicTacToeMove move = new TicTacToeMove(-1, 0);}, "-1, 0 is an invalid move but does not throw an exception");
+        }
+
+        [Test]
+        public void evaluationX0_returns_100()
+        {
+            Assert.That(UltimateTicTacToeState.evaluation('X', 0), Is.EqualTo(100), "Evaluation with X winning at a depth of 0 should return 100");
+        }
+
+        [Test]
+        public void evaluationO0_returns_n100()
+        {
+            Assert.That(UltimateTicTacToeState.evaluation('O', 0), Is.EqualTo(-100), "Evaluation with O winning at a depth of 0 should return -100");
         }
     }
 }
