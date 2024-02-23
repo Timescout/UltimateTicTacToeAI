@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 
 namespace GameLogic
@@ -35,10 +33,14 @@ namespace GameLogic
 
         private bool isXToPlay = true;
 
+        // used to track the status of the small nine boards. Because who has won a board can change if new moves are played there, and the rules allow for moves to continue to be played in won boards, this is needed to prevent boards changing hands.
+        private List<char> boardStatus_;
+
         private List<List<char>> board_ {get; set;}
 
         private void init()
         {
+            // set up the board
             board_ = new List<List<char>>();
             for (int i = 0; i < 9; i++)
             {
@@ -48,7 +50,15 @@ namespace GameLogic
                     board_[i].Add('E'); // E for empty
                 }
             }
+
+            // set up the board status
+            boardStatus_ = new List<char>();
+            for (int i = 0; i < 9; i++)
+            {
+                boardStatus_.Add('N'); // N for none
+            }
         }
+
         public UltimateTicTacToeState()
         {
             init();
@@ -59,6 +69,7 @@ namespace GameLogic
             board_ = copyState.board_;
             activeBoard_ = copyState.activeBoard_;
             depth_ = copyState.depth_;
+            boardStatus_ = copyState.boardStatus_;
         }
 
         private enum boardNumber 
@@ -102,19 +113,13 @@ namespace GameLogic
 
         public override bool isTerminal()
         {
-            throw new System.NotImplementedException();
+            return TicTacToeEvaluation(boardStatus_) == 'N'; // if noone has won, the game is not terminal.
         }
 
         public override int utility()
         {
             int utility = 0;
-            List<char> smallBoardReaults = new List<char>();
-            for (int i = 0; i < 9; i++)
-            {
-                smallBoardReaults[i] = TicTacToeEvaluation(board_[i]);
-            }
-            char result = TicTacToeEvaluation(smallBoardReaults); // tells if anyone has won the game.
-            switch (result)
+            switch (TicTacToeEvaluation(boardStatus_)) // based on the status of the board, return a utility.
             {
                 case 'X':
                     utility = 100;
@@ -136,8 +141,12 @@ namespace GameLogic
             successor.depth_++;
             successor.isXToPlay = !isXToPlay; // if X is to play, now O is to play and vice versa.
             successor.board_[action.board][action.space] = isXToPlay ? 'X' : 'O'; // play the move
+            if (boardStatus_[action.board] == 'N') // if the board has not been won, update the board status.
+            {
+                boardStatus_[action.board] = TicTacToeEvaluation(board_[action.board]);
+            }
             successor.activeBoard_ = boardNumber.anyBoard;
-            for (int i = 0; i < 9; i++) // check if there is 
+            for (int i = 0; i < 9; i++) // check if there is space in the board that is supposed to be the next active board for moves to be played.
             {
                 if (successor.board_[action.space][i] == default(char))
                 {
@@ -149,8 +158,38 @@ namespace GameLogic
 
         private char TicTacToeEvaluation(List<char> board)
         {
-            
-            return 'D'; // D for draw. They are artists.
+            char[] players = {'X', 'O'};
+            // check for winning players.
+            foreach (char player in players)
+            {
+                if 
+                (
+                    // horixontal tripilets
+                    (board[0] == player && board[1] == player && board[2] == player) ||
+                    (board[3] == player && board[4] == player && board[5] == player) ||
+                    (board[6] == player && board[7] == player && board[8] == player) ||
+                    // vertical triplets
+                    (board[0] == player && board[3] == player && board[6] == player) ||
+                    (board[1] == player && board[4] == player && board[7] == player) ||
+                    (board[2] == player && board[5] == player && board[8] == player) ||
+                    // both diagonals
+                    (board[0] == player && board[4] == player && board[8] == player) ||
+                    (board[2] == player && board[4] == player && board[6] == player)
+                )
+                {
+                    return player;
+                }
+            }
+
+            foreach (char space in board)
+            {
+                if (space == 'N')
+                {
+                    return 'N'; // if there are empty spots, noone has won the board yet.
+                }
+            }
+
+            return 'D'; // D for draw. If all spots are full and noone has won, then the board is a draw. They are artists because they drew the game.
         }
     }
 }
