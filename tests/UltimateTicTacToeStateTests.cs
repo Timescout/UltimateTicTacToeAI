@@ -56,5 +56,24 @@ namespace UltimateTicTacToeStateTests
         {
             Assert.That(UltimateTicTacToeState.evaluation('O', 0), Is.EqualTo(-100), "Evaluation with O winning at a depth of 0 should return -100");
         }
+
+        [Test]
+        public void evaluationD_returns_0()
+        {
+            Assert.That(UltimateTicTacToeState.evaluation('D', 0), Is.EqualTo(0), "Evaluation of a draw should return 0");
+        }
+
+        [Test]
+        public void evaluationX1_returns_99()
+        {
+            Assert.That(UltimateTicTacToeState.evaluation('X', 1), Is.EqualTo(99), "Evaluation with X winning at a depth of 1 should return 99");
+        }
+
+        [Test]
+        public void evaluationO1_returns_n99()
+        {
+            Assert.That(UltimateTicTacToeState.evaluation('O', 1), Is.EqualTo(-99), "Evaluation with O winning at a depth of 1 should return -99");
+        }
+
     }
 }
