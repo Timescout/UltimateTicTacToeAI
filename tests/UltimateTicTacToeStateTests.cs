@@ -1,8 +1,8 @@
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 using GameLogic;
-using System;
-using System.Security.Cryptography.X509Certificates;
 
 namespace UltimateTicTacToeStateTests
 {
@@ -73,6 +73,39 @@ namespace UltimateTicTacToeStateTests
         public void evaluationO1_returns_n99()
         {
             Assert.That(UltimateTicTacToeState.evaluation('O', 1), Is.EqualTo(-99), "Evaluation with O winning at a depth of 1 should return -99");
+        }
+
+        [Test]
+        public void isTerminal_StartingState_returnsFalse()
+        {
+            UltimateTicTacToeState state = new UltimateTicTacToeState();
+
+            Assert.That(state.isTerminal(), Is.False, "Starting State should not be terminal");
+        }
+
+        [Test]
+        public void TicTacToeEvaluation_ListOfNs_returnsN()
+        {
+            List<char> list = new List<char>();
+            for (int i = 0; i < 9; i++)
+            {
+                list.Add('N');
+            }
+
+            char result = UltimateTicTacToeState.TicTacToeEvaluation(list);
+
+            Assert.That(result, Is.EqualTo('N'), "TicTacToeEvaluation should return N on list of N's");
+        }
+
+        [Test]
+        public void GenerateMoves_StartState_generates81Moves()
+        {
+            UltimateTicTacToeState state = new UltimateTicTacToeState();
+            List<TicTacToeMove> moves;
+
+            moves = state.generateMoves();
+
+            Assert.That(moves.Count, Is.EqualTo(81), "Starting State should have 81 legal moves");
         }
 
     }
