@@ -53,6 +53,21 @@ namespace UltimateTicTacToeStateTests
             }
             return state;
         }
+    
+        // Creates a draw state
+        public static UltimateTicTacToeState createDrawState()
+        {
+            UltimateTicTacToeState state = new UltimateTicTacToeState();
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    state.board[i][j] = 'D';
+                }
+                state.boardStatus[i] = TicTacToeEvaluation(state.board[i]);
+            }
+            return state;
+        }
     }
 
 
@@ -162,20 +177,39 @@ namespace UltimateTicTacToeStateTests
         public void isTerminal_TerminalXWins_returnsTrue()
         {
             UltimateTicTacToeState state = UltimateTicTacToeStateFactory.createTerminalStateXWins();
+            Solver<UltimateTicTacToeState, TicTacToeMove> solver = new GameLogic.Solver<UltimateTicTacToeState, TicTacToeMove>();
 
             bool result = state.isTerminal();
+            (TicTacToeMove, int) value = solver.search(state);
 
             Assert.That(result, Is.True,"Terminal State should return true from isTerminal");
+            Assert.That(value.Item2, Is.EqualTo(100 - state.depth), "Expexted value of X Win terminal state with depth 0 is 100");
         }
 
         [Test]
         public void isTerminal_TerminalOWins_returnsTrue()
         {
             UltimateTicTacToeState state = UltimateTicTacToeStateFactory.createTerminalStateOWins();
+            Solver<UltimateTicTacToeState, TicTacToeMove> solver = new GameLogic.Solver<UltimateTicTacToeState, TicTacToeMove>();
 
             bool result = state.isTerminal();
+            (TicTacToeMove, int) value = solver.search(state);
 
             Assert.That(result, Is.True,"Terminal State should return true from isTerminal");
+            Assert.That(value.Item2, Is.EqualTo(-100 + state.depth), "Expexted value of O Win terminal state with depth 0 is -100");
+        }
+
+        [Test]
+        public void isTerminal_TerminalDraw_returnsTrue()
+        {
+            UltimateTicTacToeState state = UltimateTicTacToeStateFactory.createDrawState();
+            Solver<UltimateTicTacToeState, TicTacToeMove> solver = new GameLogic.Solver<UltimateTicTacToeState, TicTacToeMove>();
+
+            bool result = state.isTerminal();
+            (TicTacToeMove, int) value = solver.search(state);
+
+            Assert.That(result, Is.True,"Terminal State should return true from isTerminal");
+            Assert.That(value.Item2, Is.EqualTo(0), "Expexted value of Draw terminal state is 0");
         }
 
         [Test]
@@ -202,6 +236,22 @@ namespace UltimateTicTacToeStateTests
             bool result = highValue > lowValue;
 
             Assert.That(result, Is.True, "Wins with lower depth should be prioritized");
+        }
+
+        // A test case from use, testing if isTerminal is causing a bug where terminal states are not being noted as such.
+        [Test]
+        public void isTerminal_SmallGameFromMetricStateAlternatingMoves_returnsTrue()
+        {
+            UltimateTicTacToeState state = MetricTests.UltimateTicTacToeStateMetricStates.createNormalTicTacToeGame();
+            for(int i = 0; i < 7; i++)
+            {
+                state = state.generateSuccessor(new TicTacToeMove(4, i));
+            }
+            Solver<UltimateTicTacToeState, TicTacToeMove> solver = new Solver<UltimateTicTacToeState, TicTacToeMove>();
+            
+            bool result = state.isTerminal();
+
+            Assert.That(result, Is.True, "Normal Game with alternating pattern should be terminal after 7 moves");
         }
 
     }

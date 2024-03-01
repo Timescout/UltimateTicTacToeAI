@@ -10,11 +10,14 @@ namespace MetricTests
         public static UltimateTicTacToeState createNormalTicTacToeGame()
         {
             UltimateTicTacToeState state = new UltimateTicTacToeState();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 9; i++)
             {
-                for (int j = 0; j < 9; j++)
+                if (i != 4)
                 {
-                    state.board[i][j] = 'D';
+                    for (int j = 0; j < 9; j++)
+                    {
+                        state.board[i][j] = i % 2 == 0 ? 'X' : 'O';
+                    }
                 }
                 state.boardStatus[i] = UltimateTicTacToeState.TicTacToeEvaluation(state.board[i]);
             }

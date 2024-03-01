@@ -169,9 +169,9 @@ namespace GameLogic
             successor.depth++;
             successor.isXToPlay = !isXToPlay; // if X is to play, now O is to play and vice versa.
             successor.board[action.board][action.space] = isXToPlay ? 'X' : 'O'; // play the move
-            if (boardStatus[action.board] == 'N') // if the board has not been won, update the board status.
+            if (successor.boardStatus[action.board] == 'N') // if the board has not been won, update the board status.
             {
-                boardStatus[action.board] = TicTacToeEvaluation(board[action.board]);
+                successor.boardStatus[action.board] = TicTacToeEvaluation(successor.board[action.board]);
             }
             successor.activeBoard = boardNumber.anyBoard;
             for (int i = 0; i < 9; i++) // check if there is space in the board that is supposed to be the next active board for moves to be played.
@@ -216,8 +216,9 @@ namespace GameLogic
                     return 'N'; // if there are empty spots, noone has won the board yet.
                 }
             }
-
-            return 'D'; // D for draw. If all spots are full and noone has won, then the board is a draw. They are artists because they drew the game.
+            
+            // If all spots are full and noone has won, then the board is a draw.
+            return 'D'; // D for draw.  They are artists.
         }
     }
 }
